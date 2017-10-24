@@ -1,0 +1,129 @@
+.monitorNavi {
+    position: relative;
+}
+
+.iconMethod {
+    color: #fff;
+    padding: 0px 3px;
+    margin-right: 3px;
+}
+
+.monitorNavi ul {
+    margin: 0;
+    padding: 0;
+}
+
+.monitorNavi ul li {
+    display: block;
+    padding: 10px 0px;
+    background: #fff;
+    float: left;
+}
+.monitorNavi ul li a {
+    padding: 10px 75px;
+    font-size: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+a {
+    color: #5B5B5B;
+}
+
+.activeStatus {
+    background: #5cb85c;
+    color: #fff;
+}
+.monitorNavi ul li a:hover, .monitorNavi ul li a:focus {
+    background: #5cb85c;
+    color: #fff;
+}
+.monitorNavi ul li a:hover span, .monitorNavi ul li a:focus span {
+    border: 1px solid #fff;
+}
+.getApi {
+    background: #5cb85c;
+}
+.deleteApi {
+    background: #d9534f;
+}
+.putApi {
+    background: #f0ad4e;
+}
+.postApi {
+    background: #337ab7;
+}
+
+.unableApi {
+    background: #8C8C8C;
+}
+
+.btn {
+    border-radius: 0;
+}
+
+.monitorContent {
+    padding: 10px;
+    float: left;
+    position: relative;
+    width: 100%;
+    background: #fff;
+    height: 370px;
+    overflow: auto;
+    border-top: 2px solid #eee;
+}
+
+.monitorTitle {
+    float: left;
+    width: 100%;
+    background: #fff;
+    position: relative;
+}
+
+.returnButton {
+    color: #5B5B5B;
+    font-size: 1.6rem;
+}
+
+.returnButton:hover, .returnButton:focus {
+    color: #5cb85c;
+}
+
+.numOfMonitor {
+    padding: 0px 5px;
+    border-radius: 100%;
+    border: 1px solid #5B5B5B;
+    margin-left: 2px;
+}
+
+.monitorPara {
+    float: left;
+    width: 100%;
+    border-bottom: 1px solid #eee;
+    padding: 6px 0px 5px 0px;
+    transition: 0.3s all;
+}
+
+.monitorPara:hover, .monitorPara:focus {
+    background: #eee;
+    box-shadow: 0 0 5px rgba(91,91,91,.8);
+    transform: translate(5px,0px);
+}
+
+.testButton {
+    padding: 0px 7px;
+}
+.paraTitle {
+    float: left;
+    width: 100%;
+    padding: 10px;
+    background: #fff;
+    margin-top: 20px;
+}
+.dateSelect {
+    margin: 15px 0px 5px 15px;
+}
+.operate {
+    margin-right: 5px;
+    height: 30px;
+    width: 30px;
+}

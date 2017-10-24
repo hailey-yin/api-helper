@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styleRestAPI.css">
+    <style>
+        .iconMethod {
+            color: #fff;
+            padding: 1px 3px;
+            font-weight: 500;
+            font-size: 11px;
+            display: inline-block;
+            width: 45px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="contentRightHead" style="padding-left: 0px; margin-top: 20px;">
+        <h4 class="contentRightHeadTilte">
+            <span>budtrinity-console |  </span>
+            <span id="">1.0.0</span>
+            <a title="返回" onclick="loadPage(999)" href="#" class="returnButton pull-right">
+                <span style="transform: scale(-1,1);" class="glyphicon glyphicon-share-alt"></span>
+            </a>
+        </h4>
+    </div>
+    <div class="contentRightBody" style="padding-left: 0px;">
+        <div class="bodyEvery" style="padding-left: 0px; padding-right: 0px; padding-top: 25px;">
+            <div class="form-group" id="note-top">
+                <span style="color: #FF0000">*&nbsp;&nbsp;</span><label>发布版本号</label>
+                <input type="text" class="form-control" id="version" placeholder="发布版本号" maxlength="64" tabindex="1"value="1.0.0">
+            </div>
+            <div class="form-group">
+                <span style="color: #FF0000">*&nbsp;&nbsp;</span><label>发布说明</label>
+                <textarea class="form-control" id="release-desc" placeholder="发布说明" maxlength="1024" tabindex="2">第一次发布</textarea>
+            </div>
+            <div class="form-group">
+                <span style="color: #FF0000">*&nbsp;&nbsp;</span><label>更新说明</label>
+                <textarea class="form-control" id="update-desc" placeholder="更新说明" tabindex="3" rows="5">第一次更新</textarea>
+            </div>
+        </div>
+
+        <div class="bodyEvery" style="padding-left: 0px;">
+            <h4 class="contentRightHeadTilte">
+                <span>budtrinity-console |  </span>
+                <span id="">API</span>
+            </h4>
+        </div>
+
+        <div class="bodyEvery" style="padding-left: 0px; padding-right: 0px;">
+            <table id="users-table" class="table table-bordered table-hover">
+                <thead >
+                <tr>
+                    <th style="width: 15%;text-align: center;">名称</th>
+                    <th style="width: 15%;text-align: center;">分组</th>
+                    <th style="width: 15%;text-align: center;">类型</th>
+                    <th style="width: 15%;text-align: center;">发布状态</th>
+                    <th style="width: 15%;text-align: center;">版本号</th>
+                    <th style="width: 15%;text-align: center;">查看</th>
+                </tr>
+                </thead>
+                <tbody style="text-align: center">
+                <tr>
+                    <td><strong>查看用户</strong></td>
+                    <td>用户</td>
+                    <td><span class="iconMethod" style="background:#5cb85c;">GET</span></td>
+                    <td><span style="color:#999">已发布</span></td>
+                    <td><strong>1.0.0</strong></td>
+                    <td><a href="javascript:void(0)" onclick="showDetail('560407ae4ddfba6c29eadd87');">详情</a></td>
+                </tr>
+                <tr>
+                    <td><strong>监控API</strong></td>
+                    <td>API</td>
+                    <td><span class="iconMethod" style="background:#337ab7;">POST</span></td>
+                    <td><span style="color:#999">已发布</span></td>
+                    <td><strong>1.2.0</strong></td>
+                    <td><a href="javascript:void(0)" onclick="showDetail('560407ae4ddfba6c29eadd87');">详情</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- API详情弹窗 Start -->
+    <div id="info-modal" class="modal modal-danger">
+        <div class="modal-dialog" style="width: 900px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #ffffff;"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" style="color: #ffffff;">API信息</h4>
+                </div>
+                <div class="modal-body" id="api-info">
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- 详情弹窗 End -->
+
+</div>
+<script>
+    $(function(){
+        //初始化表格
+        //initApiTable();
+    });
+
+    //api详情展示
+    var id = "560407ae4ddfba6c29eadd87";
+    function showDetail (id) {
+        $("#info-modal").modal('show');
+        var pId = 6;
+        $("#api-info").load("pages/APIview.html");
+        $("#api-info").attr("rid",id);
+    }
+
+    // 初始化table
+    function initApiTable() {
+        $('#users-table').dataTable().fnDestroy();
+
+        $('#users-table').dataTable({
+            'bProcessing': false,
+            'bServerSide': true,
+            'sAjaxSource': 'api/users',
+            'fnServerData': retrieveData,
+            'bDestroy': true,
+            'bRetrieve': true,
+            'sAjaxDataProp': 'data',
+            'iDisplayLength': 10,
+            'bFilter': false,
+            'bLengthChange': false,
+            'bAutoWidth': false,
+            'bSort': false,
+            'aoColumns': [{
+                'mData': 'name'
+            }, {
+                'mData': 'email'
+            }, {
+                'mData': 'role',
+                'mRender': roleRender,
+                'fnCreatedCell': function(nTd) {
+                    $(nTd).css('text-align', 'center');
+                }
+            }, {
+                'mData': 'createdate',
+                'mRender': createDateRender,
+                'fnCreatedCell': function(nTd) {
+                    $(nTd).css('text-align', 'center');
+                }
+            }, {
+                'mData': 'id',
+                'mRender': descRender,
+                'fnCreatedCell': function(nTd) {
+                    $(nTd).css('text-align', 'center');
+                }
+            }]
+        });
+    }
+
+    // 渲染角色列
+    function roleRender(data, type, row) {
+        if (data === 0) {
+            return '<span class="label bg-red">超级用户</span>';
+        } else if (data === 1) {
+            return '<span class="label bg-yellow">管理员用户</span>';
+        } else {
+            return '<span class="label bg-green">普通用户</span>';
+        }
+    }
+
+    // 渲染创建时间列
+    function createDateRender(data, type, row) {
+        return new Date(parseInt(data)).format('yyyy-MM-dd hh:mm:ss');
+    }
+
+    // 渲染操作列
+    function descRender(data, type, row) {
+        var str = '<a id="'
+                + data
+                + '" onclick="editUser(this)" align="center" href="javascript:;" data-toggle="tooltip" title="编辑"><i class="fa fa-pencil text-aqua"></i></a>&nbsp;&nbsp;';
+        if (row.role == 1 || (row.role == 2 && login_role == 1)) {
+            str += '<a id="'
+                    + data
+                    + '" onclick="editAuth(this, ' + row.role + ')" align="center" href="javascript:;" data-toggle="tooltip" title="权限配置"><i class="fa fa-sitemap text-yellow"></i></a>&nbsp;&nbsp;';
+        }
+        str += '<a id="'
+                + data
+                + '" onclick="delUser(this, ' + row.role + ')" align="center" href="javascript:;" data-toggle="tooltip" title="删除"><i class="fa fa-trash text-red"></i></a>';
+        return  str;
+    }
+
+    // 异步获取table数据
+    function retrieveData(sSource, aoData, fnCallback) {
+        var row = 10; //默认一次加载10条
+        var start = 0; //从第几条开始
+        $.each(eval(aoData), function(i, field) {
+            if (field.name == 'iDisplayStart') {
+                start = field.value;
+            }
+            if (field.name == 'iDisplayLength') {
+                row = field.value;
+            }
+        });
+
+        var name = $('#q-name').val();
+        var role = $('#q-role').val();
+        $.getJSON(sSource, {
+            start: start,
+            row: row,
+            name: name,
+            type: role
+        }, function(rm) {
+            if (rm.code === 1) {
+                var data = rm.result;
+                if(!data.data){
+                    data.data = [];
+                }
+                data.iTotalRecords = rm.result.total ? rm.result.total:0;
+                data.iTotalDisplayRecords = rm.result.total ? rm.result.total:0;
+                fnCallback(data);
+            } else {
+                sAlert('查询失败！', 'error');
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

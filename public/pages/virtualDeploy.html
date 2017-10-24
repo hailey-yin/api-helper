@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styleRestAPI.css">
+    <style>
+        .iconMethod {
+            color: #fff;
+            padding: 1px 3px;
+            font-weight: 500;
+            font-size: 11px;
+            display: inline-block;
+            width: 45px;
+            height: 20px;
+        }
+
+        .btn-deploy {
+            background: #5cb85c;
+            padding: 6px;
+        }
+
+        .btn-deploy:hover, .btn-deploy:focus {
+            background: #449d44;
+        }
+
+        .deploy-modal-title {
+            color: #ffffff;
+            font-size: large
+        }
+
+        .btn-search {
+            background: #fff none repeat scroll 0 0;
+            color: #5B5B5B;
+            font-size: 1.4rem;
+            padding: 6px;
+            border: 1px solid #cac6c1;
+        }
+
+        .btn-search:hover, .btn-search:focus {
+            background: #5cb85c;
+            color: #fff;
+            border: 1px solid #5cb85c;
+        }
+
+        .api-td {
+            margin: 10px 0;
+            height: 22px;
+        }
+
+        .btn-return {
+            color: #404040;
+        }
+
+        .btn-return:hover, .btn-return:focus {
+            color: #5cb85c;
+        }
+
+        .input-search {
+            border: 1px solid #cac6c1;
+            transition: 0.5s all;
+            background: none;
+            width: 100%;
+       }
+
+        .input-search:hover, .input-search:focus {
+            border: 1px solid #5cb85c;
+            outline: none;
+        }
+
+        .DlHighlight {
+            background-color: #fff;
+            border-color: #fff;
+            border-radius: 3px;
+            border-style: solid;
+            border-width: 1px 1px 1px 6px;
+            color: #222;
+            font: 10pt Monaco,serif;
+            overflow: auto;
+            padding: 6px 1%;
+            width: 97%;
+        }
+
+        .outPut {
+            background: #fff none repeat scroll 0 0;
+            color: #5b5b5b;
+            font-size: 13px;
+            padding: 20px;
+        }
+
+        .input-test {
+            border: 0px;
+            border-bottom: 1px solid #cac6c1;
+            transition: 0.5s all;
+            background: none;
+            line-height: 16px;
+        }
+
+        .input-test:hover, .input-test:focus {
+            border: 1px solid #5cb85c;
+            outline: none;
+        }
+        
+        .btn-cancel {
+            background: #5e5e5e;
+        }
+        
+        .btn-cancel:hover, .btn-cancel:focus {
+            background: #333;
+        }
+        
+        .text-info {
+            font-family: 'Microsoft YaHei';
+            font-size: 13px;
+            color: #333;
+            border: 0;
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+<!--.container-->
+<div class="container">
+    <!--.contentRightHead-->
+    <div class="contentRightHead" style="padding-left: 0px; margin-top: 20px; padding-right: 0px;">
+        <h4 class="contentRightHeadTilte">
+            <span id="project-name"><i class="glyphicon glyphicon-cloud"></i>&nbsp;虚拟部署地址 : </span>
+            <span class="fontSmall apiView" id="virtual-url"></span>
+            <a title="返回" onclick="loadPage(111)" href="#" class="btn-return pull-right" data-toggle="tooltip" data-placement="bottom" title="返回">
+                <span style="transform: scale(-1,1);" class="glyphicon glyphicon-share-alt"></span>
+            </a>
+        </h4>
+    </div><!--/.contentRightHead-->
+    <!--.contenRightBody-->
+    <div class="contentRightBody" style="padding-left: 0px;">
+        <!--.bodyEvery-->
+        <div class="bodyEvery" style="padding-left: 0px; padding-right: 0px; padding-top: 25px;">
+            <!--form-->
+            <form>
+                <div class="btn-group"  style="width: 15%">
+                    <select id="api-group" class="input-search select2" tabindex="-1">
+                        <option value="">所有分组</option>
+                    </select>
+                </div>
+                <div class="btn-group" style="width: 15%">
+                    <input id="q-name" class="input-search" type="text" placeholder="  API名称" style="height: 34px;">
+                </div>
+                <div class="btn-group"  style="width: 15%">
+                    <select id="api-class" class="input-search select2" tabindex="-1">
+                        <option value="">所有类型</option>
+                        <option value="get">GET</option>
+                        <option value="post">POST</option>
+                        <option value="delete">DELETE</option>
+                        <option value="put">PUT</option>
+                    </select>
+                </div>
+                <div class="btn-group" style="width: 15%">
+                    <select id="deploy-status" class="input-search select2" tabindex="-1">
+                        <option value="">所有状态</option>
+                        <option value="1">已虚拟部署</option>
+                        <option value="0">未虚拟部署</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-flat btn-search" onclick="queryAPI()"><i class="glyphicon glyphicon-search"></i>&nbsp;查询</button>
+                <button type="reset" class="btn btn-warning btn-flat btn-search" onclick="resetForm()"><i class="glyphicon glyphicon-repeat"></i>&nbsp;重置</button>
+                <button type="button" class="btn btn-info btn-flat pull-right btn-deploy" onclick="removeDeploy()">
+                    <i class="glyphicon glyphicon-remove"></i>&nbsp;解除部署
+                </button>
+                <button type="button" class="btn btn-info btn-flat pull-right btn-deploy" style="margin-right: 4px;" onclick="virtualDeploy()">
+                    <i class="glyphicon glyphicon-cloud-upload"></i>&nbsp;部署
+                </button>
+            </form><!--/form-->
+        </div><!--/.bodyEvery-->
+        <!--.bodyEvery-->
+        <div class="bodyEvery" style="padding: 10px 0 0;">
+            <!--table-->
+            <table style="width: 100%;" class="table">
+                <thead>
+                <tr>
+                    <th style="text-align: left;width: 20%;padding-left: 0;">分组</th>
+                    <th style="text-align: left;width: 20%;">API名称</th>
+                    <th style="text-align: center;">类型</th>
+                    <th style="text-align: center;">状态</th>
+                    <th style="text-align: center;">查看</th>
+                    <th style="text-align: center;">
+                        <a href="javascript:void(0)" class="green" onclick="allSelectType()">
+                            <span style="color:#333">全选</span></a>
+                        <span>|</span>
+                        <a href="javascript:void(0)" class="red" onclick="invertSelectType()">
+                            <span style="color:#333">反选</span></a>
+                    </th>
+                </tr>
+                </thead>
+                <tbody id="api-table"></tbody>
+            </table><!--/table-->
+        </div><!--/.bodyEvery-->
+    </div><!--/.contenRightBody-->
+
+    <!-- 详情弹窗 Start -->
+    <!-- .modal -->
+    <div id="info-modal" class="modal modal-danger">
+        <!-- .modal-dialog -->
+        <div class="modal-dialog" style="width: 700px;">
+            <!-- .modal-content -->
+            <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #333;"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" style="color: #333;">API信息</h4>
+                    </div>
+                    <div class="modal-body" id="api-info">
+                    </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- 详情弹窗 End -->
+
+    <!-- 部署详情弹窗 Start -->
+    <!-- .modal -->
+    <div id="deploy-modal" class="modal modal-danger">
+        <!-- .modal-dialog -->
+        <div class="modal-dialog" style="width: 700px;">
+            <!-- .modal-content -->
+            <div class="modal-content">
+                <div class="modal-header" id="deploy-modal-header">
+                    <button type="button" onclick="clearInfo()" class="close" data-dismiss="modal" aria-label="Close" style="color: #333;"><span aria-hidden="true">&times;</span></button>
+                    <span class="modal-title" id="pro-name" style="color: #333;font-size: 18px;"></span>
+                </div>
+                <div class="modal-body" id="api-deploy">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h5><i class="glyphicon glyphicon-ok-circle"></i>&nbsp;已勾选<span id="checked-num"></span></h5>
+                            <table style="width: 100%;" class="table">
+                                <thead>
+                                <tr>
+                                    <th style="text-align: left;padding-left: 0px;">分组</th>
+                                    <th style="text-align: left;">名称</th>
+                                    <th style="text-align: center;">类型</th>
+                                </tr>
+                                </thead>
+                                <tbody id="api-checked-table"></tbody>
+                            </table>
+                            <div style="padding-top: 10px;text-align: center;">
+                                <button type="button" class="btn btn-info btn-flat btn-deploy" onclick="confirmDeploy()"><i class="glyphicon glyphicon-ok-sign"></i> 确认</button>
+                                <button type="reset" class="btn btn-primary btn-flat btn-cancel" class="close" data-dismiss="modal" aria-label="Close" style="padding: 6px;" onclick="clearInfo()"><i class="glyphicon glyphicon-remove-sign"></i> 取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- 部署详情弹窗 End -->
+
+</div>
+
+<!--与其他页面统一参数-->
+<div style="display: none;" id="rightContent"></div>
+
+<!--api表格jsrender start-->
+<script id="api-tmpl" type="text/x-jsrender">
+  <tr>
+    <!--组名-->
+    {{include tmpl="#api-header-tmpl"/}}
+
+    <!--api名称-->
+    <td style="text-align: left;width:30%;">
+      {{for api tmpl="#apiName"/}}
+    </td>
+
+    <!--api类别-->
+    <td style="text-align: center;width:10%;">
+      {{for api tmpl="#apiCate"/}}
+    </td>
+
+    <!--部署状态-->
+    <td style="text-align: center;width:10%;">
+      {{for api tmpl="#apiStatus"/}}
+    </td>
+
+    <!--api详情-->
+    <td style="text-align: center;width:10%;">
+      {{for api tmpl="#apiDetail"/}}
+    </td>
+
+    <!--勾选框-->
+    <td style="text-align: center;width:10%;">
+      {{for api tmpl="#checker"/}}
+    </td>
+  </tr>
+</script>
+
+<script id="api-header-tmpl" type="text/x-jsrender">
+  <!--渲染分组名称-->
+  <td style="padding-left: 0;width:30%">
+    <div class="api-td" style="text-align: left;">
+        <input style="border:0;width:100%;"value="{{>group}}" readonly></input>
+    </div>
+  </td>
+</script>
+
+<script id="apiName" type="text/x-jsrender">
+  <!--渲染api名称-->
+  <div class='api-td'>
+    <input style="border:0;width:100%;"value="{{>name}}" readonly></input>
+  </div>
+</script>
+
+<script id="apiCate" type="text/x-jsrender">
+<!--渲染类别-->
+{{if cate==='GET' tmpl='#getTmpl'/}}
+{{if cate==='POST' tmpl='#postTmpl'/}}
+{{if cate==='DELETE' tmpl='#deleteTmpl'/}}
+{{if cate==='PUT' tmpl='#putTmpl'/}}
+</script>
+
+<script id="getTmpl" type="text/x-jsrender">
+  <!--get类型-->
+  <div class='api-td'>
+    <span class="iconMethod" style="color:#5cb85c;">GET</span>
+  </div>
+</script>
+
+<script id="postTmpl" type="text/x-jsrender">
+  <!--post类型-->
+  <div class='api-td'>
+    <span class="iconMethod" style="color:#337ab7;">POST</span>
+  </div>
+</script>
+
+<script id="deleteTmpl" type="text/x-jsrender">
+  <!--delete类型-->
+  <div class='api-td'>
+    <span class="iconMethod" style="color:#d9534f;">DELETE</span>
+  </div>
+</script>
+
+<script id="putTmpl" type="text/x-jsrender">
+  <!--put类型-->
+  <div class='api-td'>
+    <span class="iconMethod" style="color:#337ab7;">PUT</span>
+  </div>
+</script>
+
+<script id="apiStatus" type="text/x-jsrender">
+{{if status===1 tmpl='#deployedTmpl'/}}
+{{if status===0 tmpl='#undeployedTmpl'/}}
+</script>
+
+<script id="deployedTmpl" type="text/x-jsrender">
+  <!--已部署图标-->
+  <div class='api-td'>
+    <i class="glyphicon glyphicon-cloud" data-toggle="tooltip" title="已部署" style="color: #5cb85c"></i>
+  </div>
+</script>
+
+<script id="undeployedTmpl" type="text/x-jsrender">
+  <!--未部署图标-->
+  <div class='api-td'>
+    <i class="glyphicon glyphicon-cloud-upload" data-toggle="tooltip" title="未部署" style="color: #cac6c1"></i>
+  </div>
+</script>
+
+<script id="apiDetail" type="text/x-jsrender">
+  <!--详情图标-->
+  <div class='api-td'>
+    <a href="javascript:void(0)" onclick="showDetail('{{:id}}')"><i class="glyphicon glyphicon-th-list text-aqua" style="color:#5cb85c;" data-toggle="tooltip" title="详情"></i></a>
+  </div>
+</script>
+
+<script id="checker" type="text/x-jsrender">
+<!--渲染是否勾选-->
+{{if status===1 tmpl='#checkedTmpl'/}}
+{{if status===0 tmpl='#uncheckedTmpl'/}}
+</script>
+
+<script id="checkedTmpl" type="text/x-jsrender">
+  <!--勾选-->
+  <div class='api-td'>
+    <input type="checkbox" checked id="{{:id}}">
+  </div>
+</script>
+
+<script id="uncheckedTmpl" type="text/x-jsrender">
+  <!--未勾选-->
+  <div class='api-td'>
+    <input type="checkbox" id="{{:id}}">
+  </div>
+</script>
+<!--api表格jsrender end-->
+
+<!--选中api表格 jsrender start-->
+<script id="api-checked-tmpl" type="text/x-jsrender">
+  <tr>
+    <!--分组名称-->
+    {{include tmpl="#apiGroupTmpl"/}}
+
+    <!--api名称-->
+    <td style="text-align: left;width: 45%;">
+      {{for api tmpl="#apiCheckedName"/}}
+    </td>
+
+    <!--api类别-->
+    <td style="text-align: center;">
+      {{for api tmpl="#apiCheckedCate"/}}
+    </td>
+  </tr>
+</script>
+
+<script id="apiGroupTmpl" type="text/x-jsrender">
+  <!--渲染分组名称-->
+  <td style="padding-left: 0px;">
+    <div class="api-td" style="text-align: left;width: 25%;">
+        <input style="border:0;width:100%;background:#eee;"value="{{>group}}" readonly></input>
+    </div>
+  </td>
+</script>
+
+<script id="apiCheckedName" type="text/x-jsrender">
+  <!--渲染api名称-->
+  <div class='api-td'>
+    <input style="border:0;width:100%;background:#eee;"value="{{>name}}" readonly></input>
+  </div>
+</script>
+
+<script id="apiCheckedCate" type="text/x-jsrender">
+<!--渲染api类型-->
+{{if cate==='GET' tmpl='#getCheckedTmpl'/}}
+{{if cate==='POST' tmpl='#postCheckedTmpl'/}}
+{{if cate==='DELETE' tmpl='#deleteCheckedTmpl'/}}
+{{if cate==='PUT' tmpl='#putCheckedTmpl'/}}
+</script>
+
+<script id="getCheckedTmpl" type="text/x-jsrender">
+  <!--get类型-->
+  <div class='api-td'>
+    <span class="iconMethod" style="color:#5cb85c;">GET</span>
+  </div>
+</script>
+
+<script id="postCheckedTmpl" type="text/x-jsrender">
+  <!--post类型-->
+  <div class='api-td'>
+    <span class="iconMethod" style="color:#337ab7;">POST</span>
+  </div>
+</script>
+
+<script id="deleteCheckedTmpl" type="text/x-jsrender">
+  <!--delete类型-->
+  <div class='api-td'>
+    <span class="iconMethod" style="color:#d9534f;">DELETE</span>
+  </div>
+</script>
+
+<script id="putCheckedTmpl" type="text/x-jsrender">
+  <!--put类型-->
+  <div class='api-td'>
+    <span class="iconMethod" style="color:#337ab7;">PUT</span>
+  </div>
+</script>
+<!--选中api表格 jsrender end-->
+
+<script>
+    $(function(){
+        //初始化select2插件
+        $('.select2').select2();
+
+        //发布说明，发布号输入框隐藏
+        $("#release-note").hide();
+
+        //下拉菜单选项数据初始化
+        $.ajax({
+            type: "GET",
+            url: "/api/projects/query",
+            dataType: "json",
+            data: {
+                pid: $("#pIdSave").val()
+            },
+            success: function (rm) {
+                if(-1 == rm.code) {
+                    swal({
+                        title: "查询条件初始化错误！",
+                        text: rm.result
+                    });
+                    return;
+                }
+
+                // 渲染分组下拉框
+                $("#api-group").empty();
+                $("#api-group").append("<option value=''>所有分组</option>");
+                for(var i=0;i<rm.result.length;i++){
+                    $("#api-group").append("<option value='"+ rm.result[i].id +"'>" + rm.result[i].name + "</option>");
+                }
+            }
+        });
+
+        // 虚拟部署地址渲染
+        $.ajax({
+            type: "GET",
+            url: "api/projects/updateUrl/"+ $("#pname-save").val(),
+            dataType: "json",
+            data: {},
+            success: function (rm) {
+                if (-1 == rm.code) {
+                    swal({
+                        title: "部署地址初始化失败！",
+                        text: "rm.result"
+                    });
+                    return;
+                }
+
+                $("#virtual-url").empty();
+                $("#virtual-url").text(rm.result.virtualUrl);
+            }
+        });
+
+        queryAPI(); // 页面初始化时查询
+    });
+
+    var idArr =[]; // id记录数组
+    var dStatusArr = []; // 部署状态记录数组
+
+    function queryAPI() {
+        idArr = []; // id存储数组清空
+        dStatusArr = []; // 部署状态存储数组清空
+        var data = {
+            pid: $("#pIdSave").val(),
+            apiName: $("#q-name").val(),
+            method: $("#api-class").val(),
+            deployStatus: $("#deploy-status").val(),
+            gid: $("#api-group").val()
+        };
+        $.ajax({
+            type: "GET",
+            url: "/api/projects/requests",
+            dataType: "json",
+            data: data,
+            success: function (rm) {
+                if (-1 == rm.code) {
+                    swal({
+                        title: "查询失败！",
+                        text: rm.result
+                    });
+                    return;
+                }
+
+                // 记录已选中api,以及后缀
+                for (var i=0;i<rm.result.length;i++){
+                    if(rm.result[i].deployStatus == 1) {
+                        idArr.push(rm.result[i]._id);
+                    }
+                }
+
+                var gnameArr = []; // 组名数组
+                for (var i=0;i<rm.result.length;i++){
+                    gnameArr.push(rm.result[i].gname);
+                }
+                var uniqArr = unique(gnameArr); // 过滤重复组名
+
+                // 拼接jsrender需要的数据格式
+                var apis = []; // jsrender参数
+                for (var i=0;i<uniqArr.length;i++){
+                    apis[i] = {};
+                    apis[i].group = uniqArr[i];
+                    apis[i].api = [];
+                    for(var j=0;j<rm.result.length;j++){
+                        if(rm.result[j].gname == uniqArr[i]){
+                            var obj = {};
+                            obj.name = rm.result[j].name;
+                            obj.id = rm.result[j]._id;
+                            obj.cate = rm.result[j].method.toUpperCase();
+                            obj.status = rm.result[j].deployStatus;
+
+                            apis[i].api.push(obj);
+                        }
+                    }
+                }
+
+                // jsrender渲染
+                $("#api-table").html(
+                        $("#api-tmpl").render(apis)
+                );
+                //初始化icheck插件
+                iCheckInit();
+                //初始化tooltip
+                $("[data-toggle='tooltip']").tooltip();
+            }
+        });
+    }
+
+    //数组去重,用于以组名分行
+    function unique(arr) {
+        var ret = [];
+        for (var i = 0; i < arr.length; i++) {
+            var item = arr[i];
+            if (ret.indexOf(item) === -1) {
+                ret.push(item);
+            }
+        }
+        return ret;
+    }
+
+    // icheck初始化
+    function iCheckInit() {
+        $('input[type="checkbox"]').iCheck({
+            checkboxClass: 'icheckbox_minimal-green',
+            radioClass: 'iradio_minimal-green',
+            increaseArea: '20%' // optional
+        });
+
+        //勾选api后记录id
+        $("input").on('ifChecked', function () {
+            idArr.push($(this).attr("id"));
+        });
+
+        //取消勾选后移除id
+        $("input").on('ifUnchecked', function () {
+            var index = idArr.indexOf($(this).attr("id"));
+            if (index > -1) {
+                idArr.splice(index, 1);
+            }
+        });
+    }
+
+    // 全选
+    function allSelectType() {
+        var ids = $("input[type='checkbox']");
+
+        for(var i=0; i < ids.length; i++) {
+            $(ids[i]).iCheck('check');
+        }
+    }
+
+    // 反选
+    function invertSelectType() {
+        var ids=$("input[type='checkbox']");
+
+        for(var i = 0; i < ids.length; i++) {
+            if(ids[i].checked == true) {
+                $(ids[i]).iCheck('uncheck');
+            }else{
+                $(ids[i]).iCheck('check');
+            }
+        }
+    }
+
+    //重置查询条件
+    function resetForm() {
+        $('#api-class').select2('val', '');
+        $('#api-group').select2('val', '');
+        $('#deploy-status').select2('val', '');
+    }
+
+    //api详情展示
+    function showDetail (id) {
+        var tid = id.toString();
+        $("#info-modal").modal('show');
+        $("#api-info").load("pages/apiDetail.html");
+        $("#rightContent").attr("rid",tid);
+    }
+
+    var flag; // 标记，flag=0表示部署；flag=1表示解除部署
+    var tmpIdArr = []; // 暂存api id
+
+    // 过滤已部署|未部署api并渲染
+    function filtApi () {
+        var data = {
+            pid: $("#pIdSave").val(),
+            apiName: "",
+            method: "",
+            deployStatus: "",
+            gid: ""
+        };
+        $.ajax({
+            type: "GET",
+            url: "/api/projects/requests",
+            dataType: "json",
+            data: data,
+            success: function (rm) {
+                if (-1 == rm.code) {
+                    swal({
+                        title: "查询失败！",
+                        text: rm.result
+                    });
+                    return;
+                }
+
+                var gnameArr = []; // 过滤之后的api组名
+                var cateArr = []; // 过滤之后的api类别名
+                var nameArr = []; // 过滤之后的api名称
+
+                // 过滤api，若点击部署api，则过滤掉已部署的api；若点击解除部署api，则过滤未部署的api
+                for(var i=0;i<idArr.length;i++) {
+                    for (var j=0;j<rm.result.length;j++) {
+                        if((idArr[i] == rm.result[j]._id) && (dStatusArr[i] != rm.result[j].deployStatus)) {
+                            tmpIdArr.push(idArr[i]);
+                            gnameArr.push(rm.result[j].gname);
+                            cateArr.push(rm.result[j].method);
+                            nameArr.push(rm.result[j].name);
+                        }
+                    }
+                }
+
+                //渲染已勾选api数量
+                var checkedNumStr = (flag === 0) ? '个未部署API' : '个已部署API';
+                checkedNumStr = tmpIdArr.length + checkedNumStr;
+                $("#checked-num").empty();
+                $("#checked-num").append(checkedNumStr);
+
+                var uniqArr = unique(gnameArr); // 过滤重复组名
+                var checkedApi = []; // jsrender参数
+
+                // 拼接jsrender需要的数据格式
+                for (var i=0;i<uniqArr.length;i++) {
+                    checkedApi[i] = {};
+                    checkedApi[i].group = uniqArr[i];
+                    checkedApi[i].api = [];
+                    for(var j=0;j<tmpIdArr.length;j++){
+                        if(gnameArr[j] == uniqArr[i]){
+                            var obj = {};
+                            obj.name = nameArr[j];
+                            obj.id = tmpIdArr[j];
+                            obj.cate = cateArr[j].toUpperCase();
+
+                            checkedApi[i].api.push(obj);
+                        }
+                    }
+                }
+
+                // jsrender 渲染过滤后的api列表
+                $("#api-checked-table").html(
+                        $("#api-checked-tmpl").render(checkedApi)
+                );
+                //初始化icheck插件
+                iCheckInit();
+                //初始化tooltip
+                $("[data-toggle='tooltip']").tooltip();
+            }
+        });
+
+        // 渲染弹出框
+        $("#deploy-modal").modal('show');
+        var proName = $("#window-lftup-name").text();
+        $("#pro-name").detach();
+        $("#deploy-modal-header").append("<span class='modal-title' id='pro-name' style='font-size: 18px'>" + proName + ' | 虚拟部署API' +"</span>");
+    }
+
+    //点击部署
+    function virtualDeploy() {
+        flag = 0; // 标记部署
+        if (idArr.length === 0){
+            var title = '您尚未勾选任何API！';
+            vAlert(title);
+            return;
+        }
+        for (var i=0;i<idArr.length;i++) {
+            dStatusArr[i] = 1;
+        }
+        // 过滤api并渲染
+        filtApi();
+    }
+
+    // 点击解除部署
+    function removeDeploy() {
+        flag = 1; // 标记解除部署
+        if (idArr.length === 0){
+            var title = '您尚未勾选任何API！';
+            vAlert(title);
+            return;
+        }
+        for (var i=0;i<idArr.length;i++) {
+            dStatusArr[i] = 0;
+        }
+        //过滤api并渲染
+        filtApi();
+    }
+
+    //alert提示框
+    function vAlert (title) {
+        swal({
+            title: title,
+            text: "1s后关闭弹窗",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    }
+
+    // 部署|解除部署操作结果提示
+    function vdresultAlert(trueflag, statusFlag) {
+        var statusStr = (statusFlag === 0) ? '部署':'解除部署';
+        var trueStr = trueflag ? '成功！':'失败！';
+        swal({
+            title: statusStr+ trueStr,
+            text: "1s后关闭弹窗",
+            showConfirmButton: false,
+            timer: 1000
+        });
+        setTimeout('$("#deploy-modal").modal("hide")', 1000);
+    }
+
+    //点击确认部署|解除部署
+    function confirmDeploy () {
+        var url = (flag === 0) ? '/api/virtual/binding' : '/api/virtual/nobinding';
+
+        if (tmpIdArr.length === 0) {
+            var title = (flag === 0) ? '不能重复部署！' : '不能重复解除部署！';
+            var text = (flag === 0) ? '请选择未部署的API进行部署' : '请选择已部署的API进行解除';
+            swal({
+                title: title,
+                text: text
+            });
+            $("#deploy-modal").modal("hide");
+            return;
+        }
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "json",
+            data: {
+                idArr: tmpIdArr,
+                pname: $("#pname-save").val()
+            },
+            success: function(rm){
+                if(-1 == rm.code){
+                    var title = (flag === 0) ? '部署失败！' : '解除部署失败！';
+                    vAlert(title);
+                    setTimeout('$("#deploy-modal").modal("hide")', 1000);
+                    return;
+                }
+
+                var title = (flag === 0) ? '部署成功！' : '解除部署成功！';
+                vAlert(title); // 提示框
+                setTimeout('$("#deploy-modal").modal("hide")', 1000);
+                queryAPI(); // 重新查询
+                clearInfo(); // 清空全局变量
+            }
+        });
+    }
+
+    function clearInfo() {
+        tmpIdArr = [];
+    }
+
+    // ********发布功能可能会用到的代码*********
+    //点击发布按钮
+    function readyRelease () {
+        if($("#version").val() == "") {
+            swal({
+                title: "版本号必填！",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        if($("#release-desc").val() == "") {
+            swal({
+                title: "发布说明必填！",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        if($("#update-desc").val() == "") {
+            swal({
+                title: "更新说明必填！",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        swal({
+            title: "确定要发布吗？",
+            confirmButtonText: "确定",
+            showCancelButton: true,
+            cancelButtonText: "再想想",
+            closeOnConfirm: false
+        },
+        function () {
+            swal({
+                title: "发布成功",
+                text: "1秒后自动跳转发布详情",
+                timer: 1000,
+                showConfirmButton: false
+            });
+            setTimeout('loadPage(888)', 1000);
+        });
+    }
+
+
+</script>
+</body>
+</html>

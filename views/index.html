@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>BudRest</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link href="plugins/bootstrap-select/bootstrap-select.min.css" rel="stylesheet"/>
+    <link href="plugins/sweetalert/sweetalert.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="plugins/ColorCode/cc-yurnero.css"/>
+    <link href="plugins/iCheck/skins/flat/_all.css" rel="stylesheet">
+    <link href="plugins/select2/select2.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/styleRestAPI.css">
+    <link href="plugins/iCheck/skins/all.css" rel="stylesheet">
+    <link href="plugins/datatable/css/bootstrap.datatable.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="plugins/bootstrap-datepicker/datepicker.min.css"/>
+    <link rel="stylesheet" href="css/style.css" type="text/css">
+
+</head>
+<body style="padding-top:70px">
+<script src="js/jquery-2.1.1.min.js" type="text/JavaScript"></script>
+<div id="bgDiv"></div>
+<!-- Head -->
+<div class="container-fluid navbar-fixed-top head">
+    <div class="container">
+        <div id="document" class="logo">
+            <div id="logo-parent" onclick="initialization()">
+                <a href="javascript:void(0)" id="window-logo">
+                    <span class="logoSpan" style="color:#5cb85c;font-size:40px">B</span>
+                    <span class="logoSpan">udRest</span>
+                </a>
+            </div>
+        </div>
+        <div class="navagation">
+            <input id="pIdSave" class="hide" value="">
+            <input id="pname-save" class="hide" value="">
+            <ul>
+                <!--<li id="document">
+                    <a href="javascript:void(0)" class="active" onclick="initialization(this)">
+                        <span class="glyphicon glyphicon-home"></span>&nbsp;首页
+                    </a>
+                </li>-->
+                <li id="authority" style="display: none">
+                    <a href="javascript:void(0)"onclick="authority(this);loadMainPage('pages/authority.html')">
+                        <span class="glyphicon glyphicon-lock"></span>&nbsp;权限
+                    </a>
+                </li>
+                <!--<li id="manage-li">
+                    <a href="javascript:void(0)" id="api-manage">
+                        <span class="glyphicon glyphicon-tasks"></span>&nbsp;管理
+                    </a>
+                    <ul style="display: none;text-align: center;" id="manage-ul">
+                        <li><a style="padding: 15px 20px;width: 130px;" href="javascript:void(0)" onclick="loadPage(222)" ><span class="glyphicon glyphicon-eye-open"></span>&nbsp;API监控</a></li>
+                        &lt;!&ndash;<li><a style="padding: 15px 20px;width: 130px;" href="javascript:void(0)" onclick="loadPage(666)">发布API</a></li>&ndash;&gt;
+                        <li><a style="padding: 15px 20px;width: 130px;" href="javascript:void(0)" onclick="loadPage(666)"><span class="glyphicon glyphicon-cloud-upload"></span>&nbsp;虚拟部署</a></li>
+                    </ul>
+                </li>-->
+                <li id="manage-li">
+                    <a href="javascript:void(0)" id="api-manage">
+                        <span class="glyphicon glyphicon-tasks"></span>&nbsp;API管理
+                    </a>
+                    <ul style="display: none;text-align: center;" id="manage-ul">
+                        <li><a style="padding: 15px 20px;width: 156px;" href="javascript:void(0)" onclick="loadPage()" ><span class="glyphicon glyphicon-eye-open"></span>&nbsp;项目管理</a></li>
+                        <!--<li><a style="padding: 15px 20px;width: 130px;" href="javascript:void(0)" onclick="loadPage(666)">发布API</a></li>-->
+                        <li><a style="padding: 15px 20px;width: 156px;" href="javascript:void(0)" onclick="loadPage(111)"><span class="glyphicon glyphicon-cloud-upload"></span>&nbsp;API管理</a></li>
+                    </ul>
+                </li>
+                <li id="apiMonitor-li">
+                    <a href="javascript:void(0)" id="api-monitor">
+                        <span class="glyphicon glyphicon-tasks"></span>&nbsp;API监控
+                    </a>
+                    <ul style="display: none;text-align: center;" id="monitor-ul">
+                        <li><a style="padding: 15px 20px;width: 156px;" href="javascript:void(0)" onclick="loadPage(555)" ><span class="glyphicon glyphicon-eye-open"></span>&nbsp;监控列表</a></li>
+                        <!--<li><a style="padding: 15px 20px;width: 130px;" href="javascript:void(0)" onclick="loadPage(666)">发布API</a></li>-->
+                        <li><a style="padding: 15px 20px;width: 156px;" href="javascript:void(0)" onclick="loadPage(777)"><span class="glyphicon glyphicon-cloud-upload"></span>&nbsp;监控日志</a></li>
+                    </ul>
+                </li>
+                <li id="virtualDeploy-li">
+                    <a href="javascr+ipt:void(0)" onclick="loadPage(666)">
+                        <span class="glyphicon glyphicon-lock"></span>&nbsp;虚拟部署
+                    </a>
+                </li>
+                <li id="loginTab">
+                    <a href="javascript:void(0)" onclick="login()">
+                        <span class="glyphicon glyphicon-user"></span>&nbsp;登录
+                    </a>
+                </li>
+                <li id="loginli">
+                    <% if (locals.user) { %>
+                    <a id="userlogin" href="javascript:void(0)">
+                        <%= locals.user.name%>&nbsp;<span class="caret"></span>
+                    </a>
+                    <ul style="display: none;" id="userlogin-ul">
+                        <li><a style="padding: 15px 20px;width: 130px;" href="javascript:void(0)" onclick="changePwd()" ><span class="glyphicon glyphicon-briefcase"></span>&nbsp;修改密码</a></li>
+                        <li><a style="padding: 15px 20px;width: 130px;" href="javascript:void(0)" onclick="logout()"><span class="glyphicon glyphicon-log-out"></span>&nbsp;退出</a></li>
+                    </ul>
+                    <script>
+                        $('#loginTab').hide();
+                        $('#authority').show();
+                        $('#userlogin-ul>li>a').css('width',$('#loginli').width()+'px')
+                        var userId = "<%= locals.user.uid%>";
+                        var userName = "<%= locals.user.name%>";
+                    </script>
+                    <% }%>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- End Head -->
+<div class="container-fluid" id="mainPage" style="padding:0;"></div>
+<div class="rightSmallBar">
+    <a href="javascript:void(0)" onclick="goToTop()">
+        <span class="glyphicon glyphicon-chevron-up"></span>
+    </a>
+</div>
+<div class="container-fluid foot">
+    <div class="container" style="position:relative">
+        <div class="footerA">
+            <ul>
+                <li><a href="javascript:void(0)">首页</a></li>
+                <li><a href="javascript:void(0)" class="activeFooter">文档</a></li>
+                <li><a href="javascript:void(0)">帮助</a></li>
+                <li><a href="javascript:void(0)">登录</a></li>
+                <li><a href="javascript:void(0)">注册</a></li>
+            </ul>
+        </div>
+        <div class="publish">
+            <span style="color:#fff">@BudRest</span>
+        </div>
+        <div class="publish">
+            <span style="color:#878787;font-size:12px">TEL:1234567-232332</span>
+        </div>
+        <div class="publish">
+            <span style="color:#878787;font-size:12px">EMAIL:abc@qwe.com</span>
+        </div>
+        <div class="footerRight">
+            <a href="javascript:void(0)" class="QRcode">
+                <img src="images/footer-weixin.gif">
+            </a>
+            <a href="javascript:void(0)" class="QRcode">
+                <img src="images/footer-weibo.gif">
+            </a>
+        </div>
+        <div class="footerRight" style="right:100px;bottom:-20px;display: none" id="QRcodeImg">
+            <img src="images/example.png" style="width: 100px">
+        </div>
+    </div>
+</div>
+<<!-- 新增/编辑弹窗 Start -->
+<div id="login-modal" class="modal modal-danger">
+    <div class="modal-dialog" style="width: 516px;">
+        <div class="modal-content">
+            <form id="login-form" class="form-horizontal">
+                <div class="modal-header" style="color: #535353;font-size: 16px;font-family:'微软雅黑';background: #f5f5f5;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <span class="logoSpan" style="color:#5cb85c;font-size:20px">BudRest</span><span style="font-size: 20px;margin-left: 10px;" class="modal-title">登录</span>
+                </div>
+                <div class="modal-body">
+                    <input id="id" name="id" type="hidden">
+                    <div class="form-group">
+                        <p class="col-sm-2"></p>
+                        <div class="col-sm-9">
+                        <p class="login_input_p">
+                            <button class="login_input_icon" disabled><span class="glyphicon glyphicon-user"></span></button>
+                            <input id="name" name="name" class="getInput" style="float: left;width:90%;border: none" type="text" autocomplete="off" placeholder="请输入用户名">
+                        </p>
+                        </div>
+                        <!--</div>-->
+                    </div>
+                    <div class="form-group">
+                        <p class="col-sm-2"></p>
+                        <div class="col-sm-9">
+                            <p class="login_input_p">
+                                <button class="login_input_icon" disabled><span class="glyphicon glyphicon-lock"></span></button>
+                                <input id="pwd" name="pwd" class="getInput no-zh-cn" style="float: left;width:90%;border: none" type="password" placeholder="请输入密码">
+                            </p>
+                        </div>
+                    </div>
+                    <div id="againpwd" class="form-group">
+                        <p class="col-sm-2"></p>
+                        <div class="col-sm-9">
+                            <p class="login_input_p">
+                                <button class="login_input_icon" disabled><span class="glyphicon glyphicon-lock"></span></button>
+                                <input id="pwd2" name="pwd" class="getInput no-zh-cn" style="float: left;width:90%;border: none" type="password" placeholder="请再输入一次密码">
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div id="reg-a" style="margin-left: 25px">
+                    <a href="javascript:void(0)" onclick="reg()">立即注册</a>
+                </div>
+                <div class="modal-footer" style="text-align: center">
+                    <button id="modal_button" type="button" class="btn green_btn" style="width: 200px" onclick="save()">登录</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div id="pwd-modal" class="modal modal-danger">
+    <div class="modal-dialog" style="width: 516px;">
+        <div class="modal-content">
+            <form id="pwd-form" class="form-horizontal">
+                <div class="modal-header" style="color: #535353;font-size: 16px;font-family:'微软雅黑';background: #f5f5f5;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">修改密码</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="pwd">原密码</label>
+                        <div class="col-sm-8">
+                            <input id="oldpwd" name="pwd" class="getInput no-zh-cn" type="password" placeholder="请输入原密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="pwd">新密码</label>
+                        <div class="col-sm-8">
+                            <input id="newpwd" name="pwd" class="getInput no-zh-cn" type="password" placeholder="请输入新密码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label" for="pwd">确认密码</label>
+                        <div class="col-sm-8">
+                            <input id="newpwd2" name="pwd" class="getInput no-zh-cn" type="password" placeholder="请输入新密码">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align: center">
+                    <button id="pwd_button" type="button" class="btn green_btn" style="width: 200px" onclick="changeOk()">确定</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="bootstrap/js/bootstrap.min.js" type="text/JavaScript"></script>
+<script type="text/javascript" src="plugins/ztree/js/jquery.ztree.all-3.5.min.js"></script>
+<script type="text/javascript" src="js/search_tree.js"></script>
+<script src="plugins/bootstrap-select/bootstrap-select.min.js"></script>
+<script src="plugins/iCheck/icheck.min.js"></script>
+<script src="plugins/jquery-nicescroll/jquery.nicescroll.js"></script>
+<script src="plugins/sweetalert/sweetalert.min.js"></script>
+<script src="plugins/ColorCode/colorcode.js"></script>
+<script src="js/jsl.format.js" type="text/JavaScript"></script>
+<script src="plugins/jsrender/jsRender.min.js" type="text/JavaScript"></script>
+<script src="js/jquery.alerts.js" type="text/JavaScript"></script>
+<!--<script src="js/index.js" type="text/javascript"></script>-->
+<script src="plugins/datatable/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="plugins/datatable/js/bootstrap.datatable.js" type="text/javascript"></script>
+<script src="plugins/select2/select2.js" type="text/javascript"></script>
+<script src="plugins/iCheck/icheck.js" type="text/javascript"></script>
+<script src="plugins/iCheck/skins/all.css" type="text/javascript"></script>
+<script src="plugins/bootstrap-datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+<script src="js/underscore-min.js" type="text/javascript"></script>
+
+<script>
+
+    var userSession = '<%= locals.user%>';
+
+    $(function () {
+        initialization();
+        $(".QRcode").hover(function(){
+            $("#QRcodeImg").stop().show(500);
+        },function(){
+            $("#QRcodeImg").stop().hide(500);
+        });
+        $("#userlogin").hover(function () {
+            $("#userlogin-ul").stop().slideDown(200);
+        }, function () {
+            $("#userlogin-ul").stop().slideUp(200);
+        });
+        $("#userlogin-ul").hover(function () {
+            $("#userlogin-ul").stop().slideDown(200);
+        }, function () {
+            $("#userlogin-ul").stop().slideUp(200);
+        });
+        //导航栏API管理扩展
+        $("#api-manage").hover(function () {
+            $("#manage-ul").stop().slideDown(200);
+        }, function () {
+            $("#manage-ul").stop().slideUp(200);
+        });
+        $("#manage-ul").hover(function () {
+            $("#manage-ul").stop().slideDown(200);
+        }, function () {
+            $("#manage-ul").stop().slideUp(200);
+        });
+
+        //导航栏API监控扩展
+        $("#api-monitor").hover(function () {
+            $("#monitor-ul").stop().slideDown(200);
+        }, function () {
+            $("#monitor-ul").stop().slideUp(200);
+        });
+        $("#monitor-ul").hover(function () {
+            $("#monitor-ul").stop().slideDown(200);
+        }, function () {
+            $("#monitor-ul").stop().slideUp(200);
+        });
+
+        //logo改为budrest
+        $("#window-logo").detach();
+        $("#logo-parent").append("<a href='javascript:void(0)' id='window-logo'>"
+                + "<span class='logoSpan logo-first-cha'>"
+                + "B"
+                + "</span>"
+                + "<span class='logoSpan'>&nbsp;"
+                + "udRest"
+                + "</span>"
+                + "</a>");
+    });
+
+
+    //首页加载
+    function initialization(v) {
+        $("#manage-li").hide();
+        $("#apiMonitor-li").hide();
+        $("#virtualDeploy-li").hide();
+        if(userSession != 'undefined' && userSession != 'null') {
+            $("#authority").show();
+        }
+        changeActive(v);
+//        $('#document').addClass('active');
+        url = "pages/projectManage.html";
+        $.ajax({
+            type: 'GET',
+            dataType: "html",
+            url: url,
+            cache: false,
+            success: function (msg) {
+                $("#mainPage").empty().html(msg);
+            }
+        });
+    }
+
+    // 加载页面
+    function loadMainPage(v) {
+        $('#mainPage').load(v);
+    }
+
+    function logout() {
+        $.ajax({
+            type: 'GET',
+            url: 'api/users/logout',
+            success: function (rm) {
+                sweetAlert({timer:2000,title: rm.msg});
+                setTimeout(function () {
+                    location.reload();
+                }, 2000);
+            }
+        });
+    }
+
+    //登录
+    function login() {
+        autoCenter(document.getElementById('login-modal'));
+        // 修改弹窗标题
+        $('#login-modal .modal-title').text('登录');
+        $('#name').val('');
+        $('#pwd').val('');
+        $('#pwd2').val('');
+        $('#modal_button').text('登录');
+        $('#againpwd').hide();
+        $('#reg-a').show();
+        // 弹出框
+        $('#login-modal').modal({backdrop: 'static'});
+        $('#login-modal').modal('show');
+
+        //登录成功隐藏loginTab
+    }
+
+    function reg() {
+        $('#login-modal .modal-title').text('注册');
+        $('#name').val('');
+        $('#pwd').val('');
+        $('#pwd2').val('');
+        $('#reg-a').hide();
+        $('#againpwd').show();
+        $('#modal_button').text('注册');
+        //注册成功直接登录，隐藏loginTab
+    }
+
+    function save() {
+        var url;
+        var data;
+        if($('#login-modal .modal-title').text() == '登录') {
+            url = 'api/users/login';
+            data = {
+                name: $('#name').val(),
+                pwd: $('#pwd').val()
+            }
+        }else{
+            if($('#pwd').val() != $('#pwd2').val()) {
+                sweetAlert({timer:2000,title: "两次输入的密码不一致"});
+                return;
+            }
+            url = 'api/users/register';
+            data = {
+                name: $('#name').val(),
+                pwd: $('#pwd').val()
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            success: function (rm) {
+                if (rm.code === 1) {
+                    if ($('#login-modal .modal-title').text() == '注册') {
+                        sweetAlert({timer: 2000, title: "注册成功"});
+                        url = 'api/users/login';
+                        data = {
+                            name: $('#name').val(),
+                            pwd: $('#pwd').val()
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: url,
+                            data: data,
+                            success: function (rm) {
+                                if (rm.code == 1) {
+                                    location.reload();
+                                }
+                            }
+                        })
+                    }
+                    else {
+                        location.reload();
+                    }
+                }
+                 else {
+                    sweetAlert({timer:2000,title: rm.msg});
+                }
+            }
+        });
+    }
+
+    function changePwd() {
+        autoCenter(document.getElementById('pwd-modal'));
+        // 弹出框
+        $('#pwd-modal').modal({backdrop: 'static'});
+        $('#pwd-modal').modal('show');
+        $('#oldpwd').val('');
+        $('#newpwd').val('');
+        $('#newpwd2').val('');
+    }
+
+    function changeOk() {
+        var url = 'api/users/'+ userId;
+        $.ajax({
+            type: 'PUT',
+            url: url,
+            data: {
+                oldpwd:$('#oldpwd').val(),
+                newpwd:$('#newpwd').val()
+            },
+            success: function (rm) {
+                if (rm.code === 1) {
+                    sweetAlert({timer:2000,title: "修改密码成功"});
+                    $('#pwd-modal').modal('hide');
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    sweetAlert({timer:2000,title: rm.msg});
+                }
+            }
+        });
+    }
+
+    function authority(v) {
+        changeActive(v);
+    }
+
+    function changeActive(v) {
+        $('.active').removeClass('active');
+        $(v).addClass('active');
+    }
+
+    //	自动居中modal
+    function autoCenter( el ){
+        var bodyH = document.documentElement.clientHeight;
+
+        var elH = el.offsetHeight;
+
+        el.style.top = (bodyH-elH)/4 + 'px';
+
+    }
+
+    //返回顶部
+    function goToTop() {
+        $("html,body").animate({scrollTop: "0px"}, 300);
+    }
+
+    //当前页面DIV框加载其他
+    function loadPage(id) {
+        if (id === 111) {
+            url = "pages/viewAPI.html"
+        } else if (id === 222) {
+            $("#document").attr('monitorId','');
+            url = "pages/monitorApi.html"
+        } else if (id === 333) {
+            url = "pages/projectManage.html"
+        } else if (id === 444) {
+            url = "pages/editAPI.html"
+        }else if (id === 555) {
+            url = "pages/monitorApiOld.html"
+        }else if (id === 666) {
+            url = "pages/virtualDeploy.html";
+        }else if (id === 777) {
+            if(typeof(logAid) != 'undefined') {
+                logAid = 'undefined';
+            }
+            url = "pages/monitorLogs.html";
+        }
+        $.ajax({
+            type: 'GET',
+            dataType: "html",
+            url: url,
+            cache: false,
+            success: function (msg) {
+                $("#mainPage").empty().html(msg);
+            }
+        });
+        $("html,body").animate({scrollTop: "0px"}, 0);
+    }
+
+    //项目切换
+    function projectCheck() {
+        url = "pages/projectManage.html";
+        $("#mainPage").load(url);
+    }
+
+    //API展示成功失败案例切换
+    function checkSuccess(id) {
+        if (id === 1) {
+            $("#successColor").css("color", "#5cb85c");
+            $("#errorColor").css("color", "");
+            $("#successExample").show();
+            $("#failureExample").hide();
+        } else if (id === 2) {
+            $("#successColor").css("color", "");
+            $("#errorColor").css("color", "red");
+            $("#successExample").hide();
+            $("#failureExample").show();
+        }
+    }
+
+    //项目详情查阅完毕后进入API展示
+    function viewAPI() {
+
+        // 导航栏管理模块显示
+        if(tempUserAuth == 0) {
+            $("#manage-li").show();
+            $("#apiMonitor-li").show();
+            $("#virtualDeploy-li").show();
+        }
+        $("#authority").hide();
+        $('.active').removeClass('active');
+        $("#pIdSave").val($('#projectId').val());
+        $("#mainPage").load("pages/viewAPI.html");
+        $("html,body").animate({scrollTop: "0px"}, 0);
+    }
+
+    //格式化Json
+    function formatJson(id) {
+        if (id == 1) {
+            try {
+                var ftxt = jsl.format.formatJson($("#outputSample").val());
+                $("#outputSample").val(ftxt);
+            } catch (e) {
+                swal({
+                    title: "json格式不正确不能进行格式化!",
+                    confirmButtonText: "确定"
+                });
+            }
+        } else {
+            var stxt = jsl.format.formatJson($("#trueSample").val());
+            var etxt = jsl.format.formatJson($("#falseSample").val());
+            $("#trueSample").val(stxt);
+            $("#falseSample").val(etxt);
+        }
+    }
+
+    /**
+     * 判断是不是JSON格式。json有两种结构：对象和数组
+     * JSON格式和Array返回的都是Object，所以需要增加判断一下，是否是数组类型。
+     * @param obj 参数
+     * @returns {boolean}
+     */
+    function isJSON(obj) {
+        var flag = false; // 标志位
+
+        if(obj == '' || obj == undefined) {
+            return flag = false;
+        }
+        var json2;
+        try{
+            json2 = JSON.parse(obj);
+        } catch(ScriptException) {
+            //console.log('json格式有误，不能转为json');
+            return flag = false;
+        }
+
+        // 判断是否json格式
+        if(typeof(json2) == 'object' && Object.prototype.toString.apply(json2) === '[object Object]') {
+            return flag = true;
+        } else if(typeof(json2) == 'object' && Object.prototype.toString.apply(json2) === '[object Array]') {
+            return flag = true;
+        } else {
+            return flag = false;
+        }
+    }
+
+</script>
+</body>
+</html>

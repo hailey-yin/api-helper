@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styleRestAPI.css">
+    <style>
+        .typeSelect {
+            width: 550px;
+            background: none;
+            border-bottom: 1px solid #cac6c1;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="outPut">
+    <div class="container">
+        <div style="text-align:center;margin-bottom:40px;">
+            <h2 style="color:#5cb85c">
+                <span class="glyphicon glyphicon-search"></span>&nbsp;
+                <span>选择你的项目</span>
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="projectHead">
+                    <div class="projectAdd">
+                        <span>没有找到？</span>
+                        <a href="javascript:void(0)" class="addProjectA" onclick="addProject()">
+                            <span>新增项目</span>
+                        </a>
+                    </div>
+                    <input class="projectInput" placeholder="请输入项目名">
+                    <a href="javascript:void(0)" onclick="installProject()" class="projectInputSearch">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </a>
+                </div>
+                <div class="projectContent" id="projectContent">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="projectManage" class="projectManaBottom">
+                    <div style="text-align:center;margin-bottom:40px;">
+                        <h2 style="color:#5cb85c">
+                            <span class="glyphicon glyphicon-file"></span>&nbsp;<span>项目信息</span>
+                        </h2>
+                    </div>
+                    <form id="projectShowDetail">
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>项目名称</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <input class="serverAddressInput" style="width:100%" placeholder="项目名称" id="projectName"
+                                       readonly="true" tabindex="1">
+                            </div>
+                        </div>
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>项目简介</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <input class="serverAddressInput" style="width:100%" placeholder="项目简介"
+                                       id="projectBrief" readonly="true" tabindex="2">
+                            </div>
+                        </div>
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>项目描述</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <textarea class="serverAddressText" style="width:100%" placeholder="项目描述"
+                                          id="projectDesc" readonly="true" tabindex="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>服务器地址</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <input class="serverAddressInput" style="width:100%" placeholder="服务器地址"
+                                       id="servesAddress" readonly="true" tabindex="4">
+                            </div>
+                        </div>
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>权限</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <!--<input class="serverAddressInput" style="width:100%" placeholder="服务器地址"-->
+                                       <!--id="servesAddress" readonly="true" tabindex="4">-->
+                                <select id="auth-select" class="serverAddressInput" disabled="true" tabindex="4" style="width: 100%;height: 42px">
+                                    <option value="1">公开</option>
+                                    <option value="2">私有</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div><input id="projectId" style="display: none"></div>
+                    </form>
+                    <div style="margin:0 auto;clear:both;text-align:center;padding:50px 0px 20px;">
+                        <a href="javascript:void(0)" style="display:none" class="nextStepA" onclick="editProject()"
+                           id="editButton"><span class="glyphicon glyphicon-pencil"></span>编辑</a>
+                        <a href="javascript:void(0)" style="display:none" class="nextStepA" onclick="saveEditProject()"
+                           id="saveButton"><span class="glyphicon glyphicon-floppy-disk"></span>保存</a>
+                        <a href="javascript:void(0)" style="display:none" class="nextStepA" onclick="saveProject()"
+                           id="newButton"><span class="glyphicon glyphicon-plus"></span>新增</a>
+                        <a href="javascript:void(0)" style="display:none" class="nextStepA delete"
+                           onclick="deleteProject()" id="delButton"><span
+                                class="glyphicon glyphicon-trash"></span>删除</a>
+                        <a href="javascript:void(0)" style="display:none" class="nextStepA cancel"
+                           onclick="projectRead()" id="cancelButton"><span class="glyphicon glyphicon-remove"></span>取消</a>
+                            <a href="javascript:void(0)" style="display:none" class="nextStepA" onclick="viewAPI()"
+                           id="nextButton"><span class="glyphicon glyphicon-hand-right"></span>下一步</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        //初始化项目展示DIV高度
+        $(".projectContent").css({"height": $(window).height() - 280 + "px"});
+        $("#projectShowDetail")[0].reset();
+        installProject();
+        $("#projectDesc").niceScroll({
+            cursorcolor: "#5cb85c",
+            cursorborder: "#5cb85c",
+            cursorwidth: "4px"
+        });
+        $("#projectContent").niceScroll({
+            cursorcolor: "#cac6c1",
+            cursorborder: "#cac6c1",
+            cursorwidth: "4px"
+        });
+
+        //logo改为budrest
+        $("#window-logo").detach();
+        $("#logo-parent").append("<a href='javascript:void(0)' id='window-logo'>"
+                + "<span class='logoSpan logo-first-cha'>"
+                + "B"
+                + "</span>"
+                + "<span class='logoSpan'>&nbsp;"
+                + "udRest"
+                + "</span>"
+                + "</a>");
+    });
+
+    //初始化项目信息
+    function installProject() {
+        $("#projectContent").empty();
+        var Name = $(".projectInput").val().trim();
+        $.ajax({
+            type: "get",
+            url: "api/projects",
+            data: {
+                name: Name
+            },
+            success: function (data) {
+                var tempdata = [];
+                for(var i=0;i<data.result.length;i++) {
+                    if(userSession != 'undefined' && userSession != 'null') {
+                        if (data.result[i].authStatus == 1 && data.result[i].author != userId) {
+                            data.result[i].userAuth = -1;
+                            tempdata.push(data.result[i]);
+                        }
+                    }else {
+                        if (data.result[i].authStatus == 1) {
+                            data.result[i].userAuth = -1;
+                            tempdata.push(data.result[i]);
+                        }
+                    }
+                }
+                if(userSession != 'undefined' && userSession != 'null') {
+                    $('.projectAdd').show();
+                    $.getJSON('api/users/'+ userId,function (rm) {
+                        if (rm.code == 1) {
+                            for(var i=0;i<data.result.length;i++) {
+                                for(var j=0;j<rm.result.project.length;j++) {
+                                if(data.result[i].id == rm.result.project[j].pid) {
+                                    data.result[i].userAuth = rm.result.project[j].auth;
+                                    tempdata.push(data.result[i]);
+                                    showProject(tempdata);
+                                }
+                                }
+                            }
+                        } else {
+//                jAlert(rm.msg, '提示');
+                        }
+                    });
+                }else {
+                    $('.projectAdd').hide();
+                }
+                showProject(tempdata);
+            }
+        });
+    }
+
+    //初始化项目名称展示
+    function showProject(content) {
+        $("#projectContent").empty();
+        var total = [];
+        for (var i = 0; i < content.length; i++) {
+            var pro = new Array();
+            if(content[i].userAuth == 0) {
+                pro.push('<div class="eachProName"><a href="javascript:void(0)" onclick="continueInput(\'' + content[i].id + '\',\'' + content[i].name + '\',\'' + content[i].info + '\',\'' + content[i].desc + '\',\'' + content[i].urlprefix + '\',\'' + content[i].userAuth + '\',\'' + content[i].authStatus + '\')">' + content[i].name +'<span style="color: #FFFFFF"> 创建者</span>'+ '</a></div>');
+            }else if(content[i].userAuth == 2){
+                pro.push('<div class="eachProName"><a href="javascript:void(0)" onclick="continueInput(\'' + content[i].id + '\',\'' + content[i].name + '\',\'' + content[i].info + '\',\'' + content[i].desc + '\',\'' + content[i].urlprefix + '\',\'' + content[i].userAuth + '\',\'' + content[i].authStatus + '\')">' + content[i].name +'<span style="color: #FFFFFF"> 编辑</span>'+  '</a></div>');
+            }else {
+                pro.push('<div class="eachProName"><a href="javascript:void(0)" onclick="continueInput(\'' + content[i].id + '\',\'' + content[i].name + '\',\'' + content[i].info + '\',\'' + content[i].desc + '\',\'' + content[i].urlprefix + '\',\'' + content[i].userAuth + '\',\'' + content[i].authStatus + '\')">' + content[i].name +'<span style="color: #FFFFFF"> 查看</span>'+ '</a></div>')
+            }
+            total.push(pro.join(''));
+        }
+        $("#projectContent").append(total);
+    }
+
+    //新增项目
+    function addProject() {
+        //表单重置
+        $("#projectShowDetail")[0].reset();
+        $("#auth-select").removeAttr("disabled");
+        $("html,body").stop(true);
+        $("html,body").animate({scrollTop: $("#projectManage").offset().top}, 500);
+        //初始化项目前缀
+        editProject("new");
+        $("#cancelButton").attr("onclick", "projectRead('new')");
+    }
+
+    //新增项目
+    function saveProject() {
+        if ($("#projectName").val() == "") {
+            swal({
+                title: "项目名称不能为空!",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        var projectName = $('#projectName').val();
+        var projectIntro = $('#projectBrief').val();
+        var projectDescription = $('#projectDesc').val();
+        if(pathPrefix = $('#servesAddress').val() != ''){
+            var pathPrefix = $('#servesAddress').val();
+        }else {
+            var pathPrefix ="http://<ip>:<port>/<context>/";
+        }
+        var projectAuth = $('#auth-select').val();
+        $.ajax({
+            type: "post",
+            url: "api/projects",
+            data: {
+                name: projectName,
+                info: projectIntro,
+                desc: projectDescription,
+                urlprefix: pathPrefix,
+                authStatus: projectAuth,
+                userId: userId
+            },
+            datatype: "json",
+            success: function (data) {
+                if (data.code == 1) {
+                    swal({
+                        title: "新增成功!",
+                        confirmButtonText: "确定"
+                    });
+                    installProject();
+                    projectRead();
+                    $("#projectId").val(data.result.pid);
+                    $("#editButton,#nextButton").show();
+                } else if (data.code == -1) {
+                    swal({
+                        title: "项目名称重复!",
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+    }
+
+    var tempUserAuth;
+
+    //选择项目名称后下滑至项目详情
+    function continueInput(a, b, c, d, e, f, g) {
+        $("html,body").stop(true);
+        $("html,body").animate({scrollTop: $("#projectManage").offset().top}, 500);
+
+        // 清空之前信息栏详情数据
+        $("#projectName").val("");
+        $("#projectBrief").val("");
+        $("#projectDesc").val("");
+        $("#servesAddress").val("");
+
+        // 填充数据
+        $("#projectId").val(a);
+        $("#projectName").val(b);
+        $("#projectBrief").val(c);
+        $("#projectDesc").val(d);
+        $("#servesAddress").val(e);
+        $('#auth-select').val(g);
+        projectRead();
+        tempUserAuth = f;
+        if(f != 1 && f != -1) {
+            $("#editButton").show();
+        }
+        $("#nextButton").show();
+    }
+
+    //编辑项目信息
+    function editProject(r) {
+        $("#projectName,#projectBrief,#projectDesc,#servesAddress").removeAttr("readonly");
+        $("#auth-select").removeAttr("disabled");
+        $("#projectName,#projectBrief,#projectDesc,#servesAddress,#auth-select").css({"background": "#fff"});
+        $("#projectName").focus();
+        if (r == "new") {
+            $("#editButton,#nextButton,#saveButton,#delButton").hide();
+            $("#newButton,#cancelButton").show();
+
+        } else {
+            $("#editButton,#nextButton,#newButton").hide();
+            $("#saveButton,#cancelButton,#delButton").show();
+            $("#cancelButton").attr("onclick", "projectRead('edit')");
+        }
+    }
+
+    //保存项目信息
+    function projectRead(r) {
+        $("#projectName,#projectBrief,#projectDesc,#servesAddress").attr("readonly", "true");
+        $("#projectName,#projectBrief,#projectDesc,#servesAddress,#auth-select").css({"background": "none"});
+        if (r == "edit") {
+            $("#projectShowDetail")[0].reset();
+            $("#editButton,#nextButton,#saveButton,#delButton,#newButton,#cancelButton").hide();
+            $("#auth-select").attr("disabled","disabled")
+            goToTop();
+        } else if (r == "new") {
+            $("#projectShowDetail")[0].reset();
+            $("#editButton,#nextButton,#saveButton,#delButton,#newButton,#cancelButton").hide();
+        } else{
+            $("#editButton,#nextButton,#saveButton,#delButton,#newButton,#cancelButton").hide();
+        }
+    }
+
+    //修改项目信息
+    function saveEditProject() {
+        if ($("#projectName").val() == "") {
+            swal({
+                title: "项目名称不能为空!",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        var pId = $('#projectId').val();
+        var projectName = $('#projectName').val();
+        var projectIntro = $('#projectBrief').val();
+        var projectDescription = $('#projectDesc').val();
+        if(pathPrefix = $('#servesAddress').val() != ''){
+            var pathPrefix = $('#servesAddress').val();
+        }else {
+            var pathPrefix ="http://<ip>:<port>/<context>/";
+        }
+        var projectAuth = $('#auth-select').val();
+        swal({
+            title: "确定更改吗?",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            closeOnConfirm: false
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $.ajax({
+                    type: "put",
+                    url: "api/projects/" + pId,
+                    data: {
+                        id: pId,
+                        name: projectName,
+                        info: projectIntro,
+                        desc: projectDescription,
+                        urlprefix: pathPrefix,
+                        authStatus: projectAuth
+                    },
+                    datatype: "json",
+                    success: function (data) {
+                        if (data.code == 1) {
+                            swal({
+                                title: "修改成功",
+                                confirmButtonText: "确定"
+                            });
+                            installProject();
+                            projectRead("edit");
+                        } else if (data.code == -1) {
+                            swal({
+                                title: "项目名称重复,修改失败",
+                                confirmButtonText: "确定"
+                            });
+                        }
+                    }
+                });
+            } else {
+            }
+        });
+    }
+
+    //删除项目
+    function deleteProject() {
+        var pId = $('#projectId').val();
+        swal({
+            title: "确定要删除吗?",
+            text: "删除项目将会把该项目下所有api解除部署",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            closeOnConfirm: false
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $.ajax({
+                    type: "delete",
+                    url: "api/projects/" + pId,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            swal({
+                                title: "删除成功",
+                                confirmButtonText: "确定"
+                            });
+                            installProject();
+                            goToTop();
+                            projectRead();
+                            $("#projectShowDetail")[0].reset();//重置项目信息
+                        } else {
+                            swal({
+                                title: "未能成功删除",
+                                confirmButtonText: "确定"
+                            });
+                        }
+                    }
+                });
+            } else {
+            }
+        });
+    }
+</script>
+</body>
+</html>

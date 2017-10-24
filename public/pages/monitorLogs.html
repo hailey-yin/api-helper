@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/styleMonitorLog.css">
+</head>
+<body>
+<div class="outPut">
+    <div class="container">
+        <div style="text-align:center;margin-bottom:20px;">
+            <h2 style="margin: 0">
+                <a style="color:#5cb85c" onclick="returnAPI()" href="#"><span id="head-name">项目名称</span>:<span
+                        id="projectName">BudRest</span></a>
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="monitorTitle" style="min-height: 450px">
+                    <div class="dateSelect">
+                        <div class="btn-toolbar" role="toolbar">
+                            <div class="btn-group" style="margin-left: 0px">
+                                <button id="all-log" onclick="selectTime(this,0)" type="button"
+                                        class="btn active">全部
+                                </button>
+                                <button id="today-log" onclick="selectTime(this,1)" type="button" class="btn">
+                                    今日
+                                </button>
+                                <button id="yestoday-log" onclick="selectTime(this,2)" type="button"
+                                        class="btn">昨天
+                                </button>
+                                <button id="week-log" onclick="selectTime(this,3)" type="button" class="btn">
+                                    最近七天
+                                </button>
+                                <button id="custom-log" onclick="selectTime(this,4)" type="button"
+                                        class="btn">自定义范围
+                                </button>
+                            </div>
+                            <form id="l-form" style="display: none">
+                                <div>
+                                    <div class="btn-group">
+                                        <input style="height: 34px;text-align: center; font-size: small" type="text"
+                                               placeholder="起始时间" class="form-control input-sm"
+                                               id="start-time" readonly="readonly">
+                                    </div>
+                                    <div class="btn-group">
+                                        <input style="height: 34px;text-align: center; font-size: small" type="text"
+                                               placeholder="截至时间" class="form-control input-sm"
+                                               id="end-time" readonly="readonly">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="backMonitor" style="position: absolute;right: 25px;top:20px;">
+                            <a class="returnButton" href="#" onclick="returnAPI()">
+                                <span class="glyphicon glyphicon-share-alt" title="返回"
+                                      style="transform: scale(-1,1);"></span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-7">
+                            <div class="monitorNavi">
+
+                                <ul class="nav-tabs" id="monitorTabClass" style="border-bottom: 0px;margin: 5px 10px">
+                                    <li class="active"><a href="#all">全部<span class="label label-info" id="totalNum"
+                                                                              style="margin-left:3px;vertical-align:text-top">0</span></a>
+                                    </li>
+                                    <li><a href="#success">成功<span class="label label-success" id="successNum"
+                                                                   style="margin-left:3px;vertical-align:text-top">0</span></a>
+                                    </li>
+                                    <li><a href="#failure">失败<span class="label label-danger" id="failureNum"
+                                                                   style="margin-left:3px;vertical-align:text-top">0</span></a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-pane" id="success"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <form style="float: right; margin:10px 10px">
+                                <div class="btn-group">
+                                    <input  id="search-api-name" class="form-control" type="text" placeholder="请输入API名">
+                                </div>
+                                <div class="btn-group">
+                                    <select id="handle-select" class="form-control select2" style="width: 85px">
+                                        <option value=-1>全部</option>
+                                        <option value=0>未处理</option>
+                                        <option value=1>已处理</option>
+                                    </select>
+                                </div>
+                                <button type="button" onclick="initTable()" class="btn btn-success btn-flat"><i class="fa fa-search"></i> 查询</button>
+                                <button type="reset" onclick="reSetSearch()" class="btn btn-primary btn-flat"><i class="fa fa-undo"></i> 重置</button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                    <div class="table-responsive" style="overflow-x: hidden; margin:0px 10px">
+                        <table id="log-table" class="table table-striped table-hover">
+                            <thead class="the-box dark full" style="background-color: #EFEFEF">
+                            <tr>
+                                <th style="width: 10%; text-align: left">API名称</th>
+                                <th style="width: 20%; text-align: left;">URL</th>
+                                <th style="width: 8%; text-align: left;">监控结果</th>
+                                <th style="width: 8%; text-align: left;">状态码</th>
+                                <th style="width: 8%; text-align: left;">响应时间</th>
+                                <th style="width: 8%; text-align: left;">监控频率</th>
+                                <th style="width: 15%; text-align: left;">监控时间</th>
+                                <th style="width: 10%; text-align: left;">处理</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--查看处理日志-->
+<div class="modal fade" id="handle-log" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog" style="top:20%">
+        <div class="modal-content" style="background: white;border-radius:0px;width:100%">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title" id="handle-log-title" style="color:#5cb85c;font-size:20px">日志详情查看</h3>
+            </div>
+            <div class="modal-body scrollYOnly">
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-7">
+                        <span>API名称:</span>
+                        <span id="api-name" class="textLogView"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <span>响应时间:</span>
+                        <span id="res-time" class="textLogView"></span>
+                    </div>
+                </div>
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-7">
+                        <span>测试路径:</span>
+                        <span id="log-method"></span>
+                        <span id="api-url" class="textLogView"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <span>状态码:</span>
+                        <span id="res-code" class="textLogView"></span>
+                    </div>
+                </div>
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-7">
+                        <span>监控频率:</span>
+                        <span id="monitor-interval" class="textLogView"></span>
+                    </div>
+                    <div class="col-md-5">
+                        <span>测试状态:</span>
+                        <span id="test-status" class="textLogView"></span>
+                    </div>
+                </div>
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-12">
+                        <span>测试时间:</span>
+                        <span id="test-date" class="textLogView"></span>
+                    </div>
+                </div>
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-2" style="padding-right: 0px">
+                        <span>测试结果:</span>
+                    </div>
+                    <div class="col-md-10" style="padding-left: 0px">
+                        <textarea class="textLogArea" readonly="readonly" id="test-result"></textarea>
+                    </div>
+                </div>
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-2" style="padding-right: 0px">
+                        <span>期待结果:</span>
+                    </div>
+                    <div class="col-md-10" style="padding-left: 0px">
+                        <textarea class="textLogArea" readonly="readonly" id="expect-result"></textarea>
+                    </div>
+                </div>
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-2" style="padding-right: 0px">
+                        <span>异常分析:</span>
+                    </div>
+                    <div class="col-md-10" style="padding-left: 0px">
+                        <textarea class="textLogArea" readonly="readonly" id="exception-analysis"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align:center">
+                <a id="cancel-modal" href="javascript:void(0)" class="btn btn-primary" style="border-radius:0px"
+                   data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>取消</a>
+                <a id="logIdSave" href="javascript:void(0)" class="btn btn-success"
+                   style="border-radius:0px; margin-left: 15px"
+                   onclick="handleLog()"><span class="glyphicon glyphicon-floppy-disk"></span>处理</a>
+
+                <a id="ok-modal" href="javascript:void(0)" class="btn btn-primary" style="width:80px;border-radius:0px;display: none"
+                   data-dismiss="modal"><span class="glyphicon glyphicon-ok"></span>确定</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var monitorStatus = -1;
+    var totalMsg = {};
+    var successNum = 0;
+    var failureNum = 0;
+    var totalNum = 0;
+
+    var logTime = 0; // 时间选择按钮组值
+    var startTime;
+    var endTime;
+
+    var searchText;
+    //    var cycle = setInterval(Initialization, 30000);
+    $(function () {
+        $('.select2').select2();
+        initPageInfo();
+        initDatePicker(); // 初始化时间控件
+        initTable(); // 初始化表格
+
+        $('#monitorTabClass a:first').click(function (e) {
+            e.preventDefault();//阻止a链接的跳转行为
+            $(this).tab('show');//显示当前选中的链接及关联的content
+            monitorStatus = -1;
+            initTable();
+        });
+        $('#monitorTabClass a:eq(1)').click(function (e) {
+            e.preventDefault();//阻止a链接的跳转行为
+            $(this).tab('show');//显示当前选中的链接及关联的content
+            monitorStatus = 1;
+            initTable();
+        });
+        $('#monitorTabClass a:last').click(function (e) {
+            e.preventDefault();//阻止a链接的跳转行为
+            $(this).tab('show');//显示当前选中的链接及关联的content
+            monitorStatus = 0;
+            initTable();
+        });
+
+    });
+
+    function initDatePicker() {
+        // 初始化时间控件
+        var checkin = $('#start-time').datepicker({
+            format: 'yyyy-mm-dd',
+            onRender: function (date) {
+                return date > new Date() ? 'disabled' : '';
+            }
+        }).on('changeDate', function (ev) {
+            if (ev.date.valueOf() > checkout.date.valueOf()) {
+                var newDate = new Date(ev.date);
+                newDate.setDate(newDate.getDate() + 1);
+                checkout.setValue(newDate);
+            }
+            checkin.hide();
+            checkout.update();
+            $('#end-time')[0].focus();
+        }).data('datepicker');
+        var checkout = $('#end-time').datepicker({
+            format: 'yyyy-mm-dd',
+            onRender: function (date) {
+                return date.valueOf() < checkin.date.valueOf() || date > new Date() ? 'disabled' : '';
+            }
+        }).on('changeDate', function (ev) {
+            checkout.hide();
+            initTable();
+        }).data('datepicker');
+
+        // 初始化下拉列表
+        $('.selectpicker').selectpicker();
+    }
+
+    //初始化页面信息
+    function initPageInfo() {
+        if(typeof(logAid) == 'undefined' || logAid == 'undefined') {
+            $("#backMonitor").hide();
+
+            var projectName = $("#pname-save").val();
+            $("#projectName").html(projectName);
+        }else{
+            $('#search-api-name').val(logName);
+            $('#head-name').text('API日志');
+            $('#projectName').html(logName);
+        }
+        var pId = $("#pIdSave").val();
+    }
+
+    // 表单重置
+    function reSetSearch() {
+        $('#search-api-name').val('');
+        $('#handle-select').select2('val', '-1');
+        initTable();
+    }
+
+    // 初始化table
+    function initTable() {
+        Initialization(); // 初始化tab
+        // table摧毁
+        $('#log-table').dataTable().fnDestroy();
+
+        // 初始化
+        $('#log-table').dataTable({
+            // 是否显示查询进度
+            'bProcessing': false,
+            // 指定从服务器端获取数据
+            'bServerSide': true,
+            // 获取路径
+//            'sAjaxSource': 'api/monitor/logs/projects/' + pId,
+            'sAjaxSource': 'api/monitor/logs/projects/2',
+            // 与后台交互获取数据的处理函数
+            'fnServerData': retrieveData,
+            // 将之前的那个数据对象清除掉，换以新的对象设置
+            'bDestroy': true,
+            // 用于指明当执行dataTable绑定时，是否返回DataTable对象
+            'bRetrieve': true,
+            // 加载的数据列表的名称
+            'sAjaxDataProp': 'data',
+            // 一个显示多少行
+            'iDisplayLength': 10,
+            // 是否显示过滤条件
+            'bFilter': false,
+            // 是否显示显示多少行的选择框
+            'bLengthChange': false,
+            // 列的宽度是否自适应
+            'bAutoWidth': true,
+            // 是否排序
+            'bSort': true,
+            // 数据展示
+            'aoColumns': [{
+                "bSortable": false,
+                'mData': 'name', // 源数据-API名字
+                'fnCreatedCell': function (nTd) { // 显示样式修改
+                    $(nTd).css('padding-left', '18px');
+                }
+            }, {
+                "bSortable": false,
+                'mData': 'urlsuffix', // 源数据-API后缀
+                'mRender': urlsuffixRender,
+                'fnCreatedCell': function (nTd) { // 显示样式修改
+                    $(nTd).css('padding-left', '18px');
+                }
+            }, {
+                "bSortable": false,
+                'mData': 'statusDesc', // 源数据-测试结果
+                'mRender': resultRender, // 渲染源数据
+                'fnCreatedCell': function (nTd) { // 显示样式修改
+                    $(nTd).css('padding-left', '18px');
+                }
+            }, {
+                "bSortable": false,
+                'mData': 'statuscode', // 源数据-状态码
+                'mRender': statusRender,
+                'fnCreatedCell': function (nTd) { // 显示样式修改
+                    $(nTd).css('padding-left', '18px');
+                }
+            }, {
+                "bSortable": false,
+                'mData': 'responsetime', // 源数据-响应时间
+                'mRender': restimeRender,
+                'fnCreatedCell': function (nTd) { // 显示样式修改
+                    $(nTd).css('padding-left', '18px');
+                }
+            }, {
+                "bSortable": false,
+                'mData': 'monitorinterval', // 源数据 - 监控频率
+                'mRender': intervalRender,
+                'fnCreatedCell': function (nTd) { // 显示样式修改
+                    $(nTd).css('padding-left', '18px');
+                }
+            }, {
+                "bSortable": true,
+                "asSorting": ["asc", "desc"],
+                'sType': 'string',
+                'mData': 'date', //  测试时间
+                'mRender': cTimeRender, // 渲染源数据
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('padding-left', '18px');
+                }
+            }, {
+                "bSortable": false,
+                'mData': 'id', // 日志处理
+                'mRender': handleRender,
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('padding-left', '18px');
+                }
+            }],
+            // 汉化语言
+//            'oLanguage': {
+//                'sUrl': 'conf/de_DE.txt'
+//            }
+        });
+    }
+
+    // 时间对象的格式化
+    Date.prototype.format = function (format) {
+        var o = {
+            'M+': this.getMonth() + 1, // month
+            'd+': this.getDate(), // day
+            'h+': this.getHours(), // hour
+            'm+': this.getMinutes(), // minute
+            's+': this.getSeconds(), // second
+            'q+': Math.floor((this.getMonth() + 3) / 3), // quarter
+            'S': this.getMilliseconds() // millisecond
+        };
+        if (/(y+)/.test(format)) {
+            format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+        }
+        for (var k in o)
+            if (new RegExp('(' + k + ')').test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length));
+            }
+        return format;
+    };
+
+    //渲染API后缀
+    function urlsuffixRender(data, type, row) {
+        var listMethod = (row.method).toUpperCase();
+        var listTempMethod;
+        switch (listMethod) {
+            case 'GET':
+                listTempMethod = '<span class="iconMethod" style="background: #5cb85c">GET</span>'
+                        + '&nbsp' + '<span title="' + data + '" class="myclass">' + data + '</span>';
+                break;
+            case 'POST':
+                listTempMethod = '<span class="iconMethod" style="background: #337AB7">POST</span>'
+                        + '&nbsp' + '<span title="' + data + '" class="myclass">' + data + '</span>';
+                break;
+            case 'PUT':
+                listTempMethod = '<span class="iconMethod" style="background: #F0AD4E">PUT</span>'
+                        + '&nbsp' + '<span title="' + data + '" class="myclass">' + data + '</span>';
+                break;
+            case 'DELETE':
+                listTempMethod = '<span class="iconMethod" style="background: #D9534F">DELETE</span>'
+                        + '&nbsp' + '<span title="' + data + '" class="myclass">' + data + '</span>';
+                break;
+        }
+        return listTempMethod;
+    }
+
+    //渲染结果显示列
+    function resultRender(data, type, row) {
+        if (data === 1) {
+            return '<div style="color:green"' + '>成功</div' + '>';
+        } else if (data === 0) {
+            return '<div style="color:red"' + '>失败</div' + '>';
+        }
+    }
+
+    //渲染状态码结果列
+    function statusRender(data, type, row) {
+        if (data === 200) {
+            return '<div style="color:green"' + '>200</div' + '>';
+        } else {
+            return '<div style="color:red"' + '>' + data + '</div' + '>';
+        }
+    }
+
+    // 渲染响应时间列
+    function restimeRender(data, type, row) {
+        if (data < 200) {
+            return '<div style="color:green"' + '>' + data + 'ms</div' + '>';
+        } else if (data < 500) {
+            return '<div style="color:orange"' + '>' + data + 'ms</div' + '>';
+        } else if (data > 500) {
+            return '<div style="color:red"' + '>' + data + 'ms</div' + '>';
+        }
+    }
+
+    //渲染监控频率列
+    function intervalRender(data, type, row) {
+        var intervalUnit = 60;
+        return '<div style="color:green"' + '>' + Math.floor(data / intervalUnit) + '分钟</div' + '>';
+    }
+
+    // 渲染注册时间列
+    function cTimeRender(data, type, row) {
+        return new Date(data).format('yyyy-MM-dd hh:mm:ss');
+    }
+
+    //渲染处理列
+    function handleRender(data, type, row) {
+        var isHandle = row.handlecode;
+        var handle;
+        switch (isHandle) {
+            case 0:
+                handle = '<a id="'
+                        + data
+                        + '" onclick="viewLog(this,'+ "'"+ isHandle + "'" +')" align="center" href="javascript:;" data-toggle="tooltip" title="未处理">' +
+                        '<span class="glyphicon glyphicon-check icon-warning" style="color:red">未处理</span></a>';
+                break;
+            case 1:
+                handle = '<a id="'
+                        + data
+                        + '" onclick="viewLog(this,'+ "'" + isHandle + "'" +')" align="center" href="javascript:;" data-toggle="tooltip" title="已处理">' +
+                        '<span class="glyphicon glyphicon-ok-circle" style="color:green">已处理</span></a>';
+                break;
+            default:
+                handle = '<a id="'
+                        + data
+                        + '" onclick="viewLog(this,'+ "'" + isHandle + "'" +')" align="center" href="javascript:;" data-toggle="tooltip" title="处理">' +
+                        '<span class="glyphicon glyphicon-eye-open">查看</span></a>';
+                break;
+        }
+        return handle;
+    }
+
+    //查看日志（弹窗）
+    function viewLog(v, isHandle) {
+
+        // 获取id
+        var id = $(v).attr('id');
+        var dt = $('#log-table').DataTable();
+        var data = dt.row($(v).closest('tr')).data();
+
+        $('#logIdSave').val(id); //保存当前id
+
+        if(isHandle != 0) {
+            $('#cancel-modal').hide();
+            $('#logIdSave').hide();
+            $('#ok-modal').show();
+        }else {
+            $('#cancel-modal').show();
+            $('#logIdSave').show();
+            $('#ok-modal').hide();
+        }
+
+        $.ajax({
+            type: 'get',
+            url: 'api/monitor/logs/' + id,
+//            url: 'api/monitor/logs/56d40d049950673d555b41b9',
+            success: function (data) {
+                if (data.code == 1) {
+                    $('#api-name').text(data.result.name);
+                    $('#log-method').addClass('iconMethod').css('background', '#5cb85c').text((data.result.method).toUpperCase());
+                    $('#res-time').text(data.result.responsetime + 'ms');
+                    if (data.result.responsetime > 200 && data.result.responsetime < 500) {
+                        $('#res-time').css('color', 'orange');
+                    } else if (data.result.responsetime > 500) {
+                        $('#res-time').css('color', 'red');
+                    } else {
+                        $('#res-time').css('color', 'green');
+                    }
+                    $('#api-url').text(data.result.urlsuffix);
+                    $('#res-code').text(data.result.statuscode);
+                    if (data.result.statuscode == 200) {
+                        $('#res-code').css('color', 'green');
+                    } else {
+                        $('#res-code').css('color', 'red');
+                    }
+                    $('#monitor-interval').text(Math.floor(data.result.monitorinterval / 60) + '分钟');
+                    if (data.result.statusDesc == 1) {
+                        $('#test-status').text('成功').css('color', 'green');
+                    } else {
+                        $('#test-status').text('失败').css('color', 'red');
+                    }
+                    $('#test-date').text(new Date(data.result.date).format('yyyy-MM-dd hh:mm:ss'));
+                    $('#test-result').text(data.result.responsedata);
+                    $('#expect-result').text(data.result.expectdata);
+                    $('#exception-analysis').text("结果与期望值不匹配");
+
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+
+        // 弹出框
+        $('#handle-log').modal({backdrop: 'static'});
+        $('#handle-log').modal('show');
+    }
+
+    //处理时间选择
+    function selectTime(v, positon) {
+
+        $(v).addClass('active');
+
+        var id = $(v).attr('id');
+
+        var all = $('#all-log').attr('id');
+        var today = $('#today-log').attr('id');
+        var yestoday = $('#yestoday-log').attr('id');
+        var week = $('#week-log').attr('id');
+        var custom = $('#custom-log').attr('id');
+        var templist = [all, today, yestoday, week, custom];
+
+        if (id == templist[4]) {
+            $('#l-form').css('display', 'block');
+            $('#start-time').focus();
+        } else {
+            $('#l-form').hide();
+            $('#l-form')[0].reset();
+            logTime = positon;
+            initTable();
+        }
+        for (i = 0; i < templist.length; i++) {
+            if (id != templist[i]) {
+                $('#' + templist[i]).removeClass('active');
+            }
+        }
+//        initTable();
+        /*switch (id) {
+            case all:
+                logTime = 0;
+                initTable();
+                break;
+            case today:
+                logTime = 1;
+                initTable();
+                break;
+            case yestoday:
+                logTime = 2;
+                initTable();
+                break;
+            case week:
+                logTime = 3;
+                initTable();
+                break;
+            case custom:
+                $('#start-time').focus();
+                break;
+        }*/
+    }
+
+    //处理日志
+    function handleLog() {
+        var logId = $("#logIdSave").val(); // 得到logid
+
+        $.ajax({
+            type: 'post',
+            url: 'api/monitor/logs/' + logId,
+            success: function (data) {
+                if (data.code == 1) {
+                    swal({
+                        title: "处理成功",
+                        confirmButtonText: "确定"
+                    });
+                    $("#handle-log").modal("hide")
+                    initTable();
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+    }
+
+    // 异步获取table数据
+    function retrieveData(sSource, aoData, fnCallback) {
+        var row = 10; //默认一次加载10条
+        var start = 1; //从第几条开始
+
+        // 获取行数及开始条数
+        // eval()转换为json对象
+        $.each(eval(aoData), function (i, field) {
+            if (field.name == 'iDisplayStart') {
+                start = field.value;
+            }
+            if (field.name == 'iDisplayLength') {
+                row = field.value;
+            }
+        });
+
+        var name = $('#search-api-name').val();
+        var startTime = $('#start-time').val();
+        var endTime = $('#end-time').val();
+
+        var handleStatus = $('#handle-select').val();
+        $.getJSON(sSource, {
+            start: start,
+            row: row,
+            name: name,
+            monitorStatus: monitorStatus,
+            time: logTime, //0全部，1今天，2昨天，3最近7天
+            startTime: startTime,
+            endTime: endTime,
+            handleStatus: handleStatus
+        }, function (rm) {
+            if (1 === rm.code) {
+                var data = {};
+                data = rm.result;
+                data.iTotalRecords = rm.result.total;
+                data.iTotalDisplayRecords = rm.result.total;
+
+                // fnCallback是dataTable的数据渲染方法；
+                // $.parseJSON()将字符串转为json
+                fnCallback(data);
+            } else {
+                sweetAlert(rm.msg, '提示');
+            }
+        });
+    }
+
+    //初始化展示tab信息
+    function Initialization() {
+        $.ajax({
+            type: 'get',
+            data: {name: $('#search-api-name').val(),handleStatus: $('#handle-select').val()},
+//            url: 'api/monitor/logs/projects/' + pId,
+            url: 'api/monitor/logs/projects/2',
+            success: function (data) {
+                if (data.code == 1) {
+                    totalNum = data.result.data.length;
+                    if (totalNum != undefined) {
+                        $("#totalNum").text(totalNum);
+                    } else {
+                        $("#totalNum").text(0);
+                    }
+
+                    for (var obj in data.result.data) {
+                        var isSuccessLog = data.result.data[obj].statusDesc;
+                        if (isSuccessLog == 1) { // 成功
+                            successNum++;
+                        } else if (isSuccessLog == 0) { // 失败
+                            failureNum++
+                        }
+                    }
+                    $("#successNum").text(successNum);
+                    $("#failureNum").text(failureNum);
+                    totalNum = 0;
+                    successNum = 0;
+                    failureNum = 0;
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+    }
+
+    //选择状态
+    var typeFlag = 1;// 标记当前tab类型
+    var selectedTab = $('#totalNum');// 标记当前tab
+
+    // 返回监控列表页面
+    function returnAPI() {
+        if(typeof(logAid) != 'undefined' && logAid != 'undefined') {
+            console.log(logAid)
+            $("#mainPage").load("pages/monitorApiOld.html");
+            $("html,body").animate({scrollTop: "0px"}, 0);
+        }
+    }
+
+</script>
+</body>
+</html>

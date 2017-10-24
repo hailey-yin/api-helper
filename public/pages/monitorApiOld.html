@@ -1,0 +1,1422 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/styleMonitor.css">
+    <link rel="stylesheet" type="text/css" href="css/styleAddMonitor.css">
+</head>
+<body>
+<div class="outPut">
+    <div class="container">
+        <div style="text-align:center;margin-bottom:20px;">
+            <h2 style="margin: 0">
+                <a style="color:#5cb85c" onclick="returnAPI()" href="#"><span>项目名称</span>:<span
+                        id="projectName">BudRest</span></a>
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="monitorTitle" style="min-height: 450px">
+                    <div class="dateSelect">
+                        <div class="btn-toolbar" role="toolbar">
+                            <div class="btn-group" style="margin-left: 0px">
+                                <button type="button" class="btn  active " id="all-monitor"
+                                        onclick="queryDate(this,0)">全部
+                                </button>
+                                <button type="button" class="btn" id="today-monitor"
+                                        onclick="queryDate(this,1)">今日
+                                </button>
+                                <button type="button" class="btn" id="yestoday-monitor"
+                                        onclick="queryDate(this,2)">昨天
+                                </button>
+                                <button type="button" class="btn" id="week-monitor"
+                                        onclick="queryDate(this,3)">最近七天
+                                </button>
+                                <button type="button" class="btn" id="custom-monitor"
+                                        onclick="queryDate(this,4)">自定义范围
+                                </button>
+                            </div>
+                            <form id="l-form" style="display: none">
+                                <div>
+                                    <div class="btn-group">
+                                        <input style="height: 34px;text-align: center; font-size: small" type="text"
+                                               placeholder="起始时间" class="form-control input-sm"
+                                               id="start-time" readonly="readonly">
+                                    </div>
+                                    <div class="btn-group">
+                                        <input style="height: 34px;text-align: center; font-size: small" type="text"
+                                               placeholder="截至时间" class="form-control input-sm"
+                                               id="end-time" readonly="readonly">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div id="backMonitor" style="position: absolute;right: 10px;top:14px;">
+                            <button id="addMonitor" class="btn btn-block btn-success btn-flat" href="#"
+                                    data-toggle="modal" data-target="#myModal"><span
+                                    class="glyphicon glyphicon-plus icon-white" title="添加"
+                                    style="padding-left: 10px"></span>添加监控
+                            </button>
+                        </div>
+                    </div>
+                    <div class="monitorNavi row">
+
+                        <form style="float: right; margin:10px 25px">
+                            <div class="btn-group">
+                                <input id="search-api-name" class="form-control" type="text" placeholder="请输入API名">
+                            </div>
+                            <button type="button" onclick="initTable()" class="btn btn-success btn-flat"><i
+                                    class="fa fa-search"></i> 查询
+                            </button>
+                            <button type="reset" onclick="reSetSearch()" class="btn btn-primary btn-flat"><i
+                                    class="fa fa-undo"></i> 重置
+                            </button>
+                        </form>
+
+                        <ul class="nav-tabs" id="monitorTabClass" style="border-bottom: 0px; margin: 5px 10px 0px 25px">
+                            <li class="active"><a href="#all">全部
+                                    <span class="label label-info" id="totalNum"
+                                          style="margin-left:3px;vertical-align:text-top">0</span></a>
+                            </li>
+                            <li><a href="#success">成功
+                                    <span class="label label-success" id="successNum"
+                                          style="margin-left:3px;vertical-align:text-top">0</span></a>
+                            </li>
+                            <li><a href="#failure">失败
+                                    <span class="label label-danger" id="failureNum"
+                                          style="margin-left:3px;vertical-align:text-top">0</span></a>
+                            </li>
+                        </ul>
+                        <div class="tab-pane" id="success"></div>
+                    </div>
+                    <div class="table-responsive" style="overflow-x: hidden;margin:0px 10px">
+                        <table id="monitor-table" class="table table-striped table-hover">
+                            <thead class="the-box dark full" style="background-color: #EFEFEF;">
+                            <tr>
+                                <th style="width: 15%;text-align: left">API名称</th>
+                                <th style="width: 15%;text-align: left">监控时间</th>
+                                <th style="width: 20%;text-align: left">URL</th>
+                                <th style="width: 10%;text-align: left">监控结果</th>
+                                <th style="width: 10%;text-align: left">状态码</th>
+                                <th style="width: 15%;text-align: left">监控状态</th>
+                                <th style="width: 20%; text-align:left">处理状态</th>
+                            </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+<!--添加监控模态框-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="background-color: white;width: 800px">
+            <div class="modal-header" style="margin-bottom: 10px">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel" style="text-align:left">选择需要监控的API</h4>
+            </div>
+            <div class="modal-body">
+                <div class="head-wrap" style="margin-bottom: 10px">
+                    <div class="btn-group" role="group">
+                        <button id="all-checked" type="button" class="cus-btn btn btn-default">全选</button>
+                        <button id="all-unchecked" type="button" class="cus-btn btn btn-default">反选</button>
+                    </div>
+                    <input id="search_word" class="search" placeholder="输入查询条件">
+                    <!-- 查询的按钮 -->
+                    <span id="search_btn" class="search-icon glyphicon glyphicon-search"></span>
+                </div>
+                <table id="nomonitor-table" class="table table-striped table-hover">
+                    <thead class="the-box dark full" style="background-color: #EFEFEF">
+                    <tr>
+                        <th style="padding-left: 50px;">API名称</th>
+                        <th style="">所属分组</th>
+                        <th></th>
+                        <th style="padding-left: 10px">URL</th>
+                    </tr>
+                    </thead>
+                    <tbody id="table-tbody"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button id="addmonitor_surebtn" type="button" class="sure btn btn-default cus-btn" data-dismiss="modal"
+                        style="foot-weight:bold;color: white">确定
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--------------------------------------------yhl-----------------------------------------------------
+<!-- 监控配置弹窗 Start -->
+<div id="config-modal" class="modal fade">
+    <input id="config-ability" value="" style="display: none">
+
+    <div class="modal-dialog" style="width: 750px;">
+        <div class="modal-content">
+            <form id="config-form" class="form-horizontal">
+                <div class="modal-header"
+                     style="color: #535353;font-size: 16px;font-family:'微软雅黑';background: #f5f5f5;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <span class="logoSpan" style="color:#5cb85c;font-size:20px">监控配置</span>
+                </div>
+                <div class="modal-body" style="height: 450px;background-color: white;overflow-y: scroll">
+                    <input id="config-mid" name="mid" type="hidden">
+
+                    <div class="form-group" style="margin-top: 20px">
+                        <div class="col-sm-10">
+                            <label class="contentRightHeadTilte" style="font-size:17px">一、参数配置</label>
+                        </div>
+                    </div>
+                    <div style="margin: 65px;margin-top: 0px;margin-bottom: 20px">
+                        <div class="form-group" style="border-bottom: 0.1rem solid #cac6c1;margin-bottom: 20px">
+                            <label id="config-apimethod" class="contentRightHeadTilte">GET</label>&nbsp;&nbsp;
+                            <label id="config-apiName" class="contentRightHeadTilte">获取项目</label>
+                        </div>
+                        <div class="form-group">
+                            <span class="glyphicon glyphicon-cloud"></span>&nbsp;
+                            <label class="contentRightHeadTilte">测试服务地址:</label>
+                            <input class="form-control" id="config-testurl"
+                                   style="background-color: #eee;border-style: none;width: 100%;color: black;height: 43px;">
+                        </div>
+                        <div class="form-group">
+                            <span class="glyphicon glyphicon-th-list"></span>&nbsp;
+                            <label class="contentRightHeadTilte">Headers:</label>
+
+                            <div id="configHeaders" style="display: none;">
+                                <div class="form-group" style="background-color: #eee;padding:5px;">
+                                    <label class="col-sm-2 control-label"
+                                           style="background-color: #eee;text-align: center;" readonly>参数名</label>
+
+                                    <div class="col-sm-10" style="background-color: #eee;">
+                                        <input class="form-control underline-input" style="background-color: #eee;"
+                                               placeholder="值">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <span class="glyphicon glyphicon-th-list"></span>&nbsp;
+                            <label class="contentRightHeadTilte">参数:</label>
+
+                            <div id="configParams" style="display: none;">
+                                <div class="form-group" style="background-color: #eee;padding:5px;">
+                                    <label class="col-sm-2 control-label"
+                                           style="background-color: #eee;text-align: center;" readonly>参数名</label>
+
+                                    <div class="col-sm-10" style="background-color: #eee;">
+                                        <input class="form-control underline-input" style="background-color: #eee;"
+                                               placeholder="值">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <label class="contentRightHeadTilte" style="font-size:17px">二、监控规则配置</label>
+                        </div>
+                    </div>
+                    <div style="margin: 65px;margin-right: 10px;margin-top: 0px">
+                        <div class="form-group">
+                            <span class="glyphicon glyphicon-wrench"></span>&nbsp;
+                            <label class="contentRightHeadTilte">常规警告设置</label>&nbsp;
+                        </div>
+                        <div class="form-group" style="margin-left: 8px;margin-top: 0px">
+                            <label>告警邮箱:</label>&nbsp;
+                            <input class="addInput" id="config-warnningEmail" placeholder="请输入报警邮箱"
+                                   style="width: 508px; color: black">
+                        </div>
+                        <div class="form-group" style="margin-left: 8px;margin-top: 0px">
+                            <label>提醒规则:</label>&nbsp;
+                            <select class="form-control select2" id="config-warnningRule" style="width: 220px"
+                                    onchange="changeView(this.value)">
+                                <option value="0" onclick="warnningRuleOne()">只在监控结果改变时报警</option>
+                                <option value="1" onclick="warnningRuleTwo()">设置最小时间间隔</option>
+                            </select>&nbsp;&nbsp;
+                            <label id="miniIntervalLabel">报警最小时间间隔:</label>&nbsp;
+                            <input id="config-miniInterval" class="form-control" style="width: 50px;display: inline">&nbsp;
+                            <span id="warnningTimeUnit">分钟</span>
+                        </div>
+                        <div class="form-group">
+                            <span class="glyphicon glyphicon-wrench"></span>&nbsp;
+                            <label class="contentRightHeadTilte">监控规则设置</label>&nbsp;
+                        </div>
+                        <div class="form-group" style="margin-left: 8px;margin-top: 0px;">
+                            <label>监控频率:</label>&nbsp;
+                            <div class="btn-group" id="config-testInterval">
+                                <Button class="btn white_btn" type="button">15分钟</Button>
+                                <Button class="btn white_btn" type="button">20分钟</Button>
+                                <Button class="btn white_btn" type="button">30分钟</Button>
+                                <Button class="btn white_btn" type="button">60分钟</Button>
+                                <Button id="custom-btn" class="btn white_btn" type="button">自定义</Button>
+                            </div>
+                            &nbsp;&nbsp;
+                            <input id="config-editTestInterval" class="form-control"
+                                   style="width: 50px;display: inline;padding-top: 2px;">&nbsp;
+                            <span id="timeUnit">分钟</span>
+                        </div>
+                        <div class="form-group" style="margin-left: -28px;margin-top: 0px">
+                            <label class="col-sm-2 control-label">匹配内容:</label>
+
+                            <div class="col-sm-10" style="margin-left: -22px">
+                                <textarea class="addInput" style="height: 60px;width: 508px"
+                                          id="config-matchingContent"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align: center">
+                    <button id="modal_button" type="button" class="btn green_btn" style="width: 200px"
+                            onclick="saveConfig()">确定
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!---- content-end ---->
+    </div>
+    <!---- dialog-end ---->
+</div>
+<!---- modal-end ---->
+<!------------------------------------------------------------------------------------------------->
+
+<script>
+    //获取项目id
+    var pId = $("#pIdSave").val();
+
+    //获取监控项目名称
+    var projectName = $("#pname-save").val();
+    $("#projectName").html(projectName);
+
+    var successNum = 0;
+    var failureNum = 0;
+    var totalNum = 0;
+    var time = 0; // 时间选择按钮组值
+    var testStatus = 0;
+    var startTime = '';
+    var endTime = '';
+    $(function () {
+        $('.select2').select2();
+        //初始化时间控件
+        initDatePicker();
+        //初始化表格
+        initTable();
+
+        $('#monitorTabClass a:first').click(function (e) {
+            testStatus = 0;
+            e.preventDefault();//阻止a链接的跳转行为
+            $(this).tab('show');//显示当前选中的链接及关联的content
+            initTable();
+        });
+        $('#monitorTabClass a:eq(1)').click(function (e) {
+            testStatus = 1;
+            e.preventDefault();//阻止a链接的跳转行为
+            $(this).tab('show');//显示当前选中的链接及关联的content
+            initTable();
+        });
+        $('#monitorTabClass a:last').click(function (e) {
+            testStatus = 2;
+            e.preventDefault();//阻止a链接的跳转行为
+            $(this).tab('show');//显示当前选中的链接及关联的content
+            initTable();
+        });
+
+    });
+
+    //初始化时间控件
+    function initDatePicker() {
+        // 初始化时间控件
+        var checkin = $('#start-time').datepicker({
+            format: 'yyyy-mm-dd',
+            onRender: function (date) {
+                return date > new Date() ? 'disabled' : '';
+            }
+        }).on('changeDate', function (ev) {
+            if (ev.date.valueOf() > checkout.date.valueOf()) {
+                var newDate = new Date(ev.date);
+                newDate.setDate(newDate.getDate() + 1);
+                checkout.setValue(newDate);
+            }
+            checkin.hide();
+            checkout.update();
+            $('#end-time')[0].focus();
+        }).data('datepicker');
+        var checkout = $('#end-time').datepicker({
+            format: 'yyyy-mm-dd',
+            onRender: function (date) {
+                return date.valueOf() < checkin.date.valueOf() || date > new Date() ? 'disabled' : '';
+            }
+        }).on('changeDate', function (ev) {
+            checkout.hide();
+            startTime = $('#start-time').val();
+            endTime = $('#end-time').val();
+            initTable();
+        }).data('datepicker');
+    }
+
+    //初始化表格
+    function initTable() {
+
+        //摧毁table
+        $('#monitor-table').dataTable().fnDestroy();
+
+        //初始化
+        $('#monitor-table').dataTable({
+            // 是否显示查询进度
+            'bProcessing': false,
+            // 指定从服务器端获取数据
+            'bServerSide': true,
+            // 获取路径
+            'sAjaxSource': 'api/monitor/projects/' + pId,
+            // 与后台交互获取数据的处理函数
+            'fnServerData': retrieveData,
+            // 将之前的那个数据对象清除掉，换以新的对象设置
+            'bDestroy': true,
+            // 用于指明当执行dataTable绑定时，是否返回DataTable对象
+            'bRetrieve': true,
+            // 加载的数据列表的名称
+            'sAjaxDataProp': 'data',
+            // 一个显示多少行
+            'iDisplayLength': 10,
+            // 是否显示过滤条件
+            'bFilter': false,
+            // 是否显示显示多少行的选择框
+            'bLengthChange': false,
+            // 列的宽度是否自适应
+            'bAutoWidth': false,
+            // 是否排序
+            'bSort': true,
+            // 汉化语言
+//            'oLanguage': {
+//                'sUrl': 'conf/de_DE.txt'
+//            },
+            // 数据展示
+            'aoColumns': [{
+                "bSortable": false,
+                'mData': 'name',
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('text-align', 'left');
+                    $(nTd).css('padding-left', '18px');
+                    $(nTd).css('padding-right', '18px');
+                }
+            }, {
+                'mData': 'date',
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('text-align', 'left');
+                    $(nTd).css('padding-left', '18px');
+                    $(nTd).css('padding-right', '18px');
+                }
+            }, {
+                'mData': 'urlsuffix',
+                'bSortable': false,
+                'mRender': urlRender,
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('text-align', 'left');
+                    $(nTd).css('padding-left', '18px');
+                    $(nTd).css('padding-right', '18px');
+                }
+            }, {
+                'mData': 'testStatus',
+                'mRender': testStatusRender,
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('text-align', 'left');
+                    $(nTd).css('padding-left', '18px');
+                    $(nTd).css('padding-right', '18px');
+                }
+            }, {
+                'mData': 'statusCode',
+                'mRender': statusDescRender,
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('text-align', 'left');
+                    $(nTd).css('padding-left', '18px');
+                    $(nTd).css('padding-right', '18px');
+                }
+            }, {
+                'mData': 'ability',
+                'mRender': abilityRender,
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('text-align', 'left');
+                    $(nTd).css('padding-left', '18px');
+                    $(nTd).css('padding-right', '18px');
+                }
+            }, {
+                'mData': 'aid',
+                'bSortable': false,
+                'mRender': descRender,
+                'fnCreatedCell': function (nTd) {
+                    $(nTd).css('text-align', 'left');
+                    $(nTd).css('padding-left', '18px');
+                    $(nTd).css('padding-right', '18px');
+                }
+            }]
+        });
+    }
+
+    // 时间对象的格式化
+    Date.prototype.format = function (format) {
+        var o = {
+            'M+': this.getMonth() + 1, // month
+            'd+': this.getDate(), // day
+            'h+': this.getHours(), // hour
+            'm+': this.getMinutes(), // minute
+            's+': this.getSeconds(), // second
+            'q+': Math.floor((this.getMonth() + 3) / 3), // quarter
+            'S': this.getMilliseconds() // millisecond
+        };
+        if (/(y+)/.test(format)) {
+            format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+        }
+        for (var k in o)
+            if (new RegExp('(' + k + ')').test(format)) {
+                format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length));
+            }
+        return format;
+    };
+
+    //渲染url列
+    function urlRender(data, type, row) {
+        var method = row.method.toUpperCase();
+        var URL = data;
+
+        /*var s = ":3000/";
+         var URL = data.substring(data.indexOf(s) + s.length);*/
+
+        if (method == "GET") {
+            return '<div id="' + row._id + '"><span style="background: #5cb85c; margin-right:5px; color:white;font-size: 13px;">GET</span>' + URL + '</div>'
+        } else if (method == "PUT") {
+            return '<div id="' + row._id + '"><span style="background: #fff980; margin-right:5px; color:white;font-size: 13px">PUT</span>' + URL + '</div>'
+        } else if (method == "DELETE") {
+            return '<div id="' + row._id + '"><span style="background: #d9534f; margin-right:5px; color:white;font-size: 13px">DELTTE</span>' + URL + '</div>'
+        } else if (method == "POST") {
+            return '<div id="' + row._id + '"><span style="background: #5bc0de; margin-right:5px; color:white;font-size: 13px">POST</span>' + URL + '</div>'
+        } else {
+            return '<div id="' + row._id + '"><span style="background: #5cb85c; margin-right:5px; color:white;font-size: 13px">GET</span>' + URL + '</div>'
+        }
+    }
+
+    //渲染测试结果列
+    function testStatusRender(data, type, row) {
+        switch (row.ability) {
+            case 2:
+                return '<span></span>';
+                break;
+            case 1:
+                if (data == 1) {
+                    return '<span style="color: #696969">成功</span>';
+                }
+                if (data == 2) {
+                    return '<span style="color: #696969">失败</span>';
+                }
+                break;
+            case 0:
+                if (data == 1) {
+                    return '<span style="color: #5cb85c">成功</span>';
+                }
+                if (data == 2) {
+                    return '<span style="color: #d9534f">失败</span>';
+                }
+                break;
+        }
+
+    }
+
+    //渲染状态描述列
+    function statusDescRender(data, type, row) {
+        switch (row.ability) {
+            case 2:
+                return '<span></span>';
+                break;
+            case 1:
+                if (data == 200) {
+                    return '<span style="color: #696969">' + data + '</span>';
+                } else {
+                    return '<span style="color: #696969">' + data + '</span>';
+                }
+                break;
+            case 0:
+                if (data == 200) {
+                    return '<span style="color: #5cb85c">' + data + '</span>';
+                } else {
+                    return '<span style="color: #d9534f">' + data + '</span>';
+                }
+                break;
+        }
+    }
+
+    //渲染监控状态列
+    function abilityRender(data, type, row) {
+        if (data == 0) {
+            return '<div style="border-radius: 50%; width: 7px; height: 7px; background: #5cb85c; display: inline-block; margin-right: 5px; margin-bottom: 2px"></div>正在监控'
+        } else if (data == 2) {
+            return '<span><div style="border-radius: 50%; width: 7px; height: 7px; background: #fff980; display: inline-block; margin-right: 5px;margin-bottom: 2px"></div></span>等待监控'
+        } else {
+            return '<span style="border-radius: 50%; width: 7px; height: 7px; background: #d9534f; display: inline-block; margin-right: 5px; margin-bottom: 2px"></span>暂停中'
+        }
+    }
+
+    //渲染操作列
+    function descRender(data, type, row) {
+        var html = '<a id="'
+                + data
+                + '" onclick="lookMonitorLog(this,' + "'" + row.name + "'" + ')" align="center" href="javascript:;" data-toggle="tooltip" title="查看日志" class="operate"><span class="glyphicon glyphicon-zoom-in icon-warning"></span></a>&nbsp;&nbsp;'
+        switch (row.ability) {
+            case 0:
+                html += '<a id="'
+                        + data
+                        + '" class="' + data + '" onclick="editMonitorStatus(this)" align="center" href="javascript:;" data-toggle="tooltip" title="启动或暂停" class="operate"><span id="startOrPause" class="glyphicon glyphicon-pause"></span></a>&nbsp;&nbsp;'
+
+                break;
+            case 1:
+                html += '<a id="'
+                        + data
+                        + '" class="' + data + '" data-id = "' + row._id + '" onclick="editMonitorStatus(this)" align="center" href="javascript:;" data-toggle="tooltip" title="启动或暂停" class="operate"><span id="startOrPause" class="glyphicon glyphicon-play"></span></a>&nbsp;&nbsp;'
+                break;
+            case 2:
+                html += '<a id="'
+                        + data
+                        + '" class="' + data + '" data-id = "' + row._id + '" onclick="editMonitorStatus(this)" align="center" href="javascript:;" data-toggle="tooltip" title="启动或暂停" class="operate"><span id="startOrPause" class="glyphicon glyphicon-play"></span></a>&nbsp;&nbsp;'
+                break;
+            default :
+                sweetAlert("您的数据监控状态有误，请联系管理员处理");
+                break;
+
+        }
+        html += '<a id="'
+                + data
+                + '" onclick="delMonitor(this)" align="center" href="javascript:;" data-toggle="tooltip" title="删除监控" class="operate"><span class="glyphicon glyphicon-trash"></span></a>&nbsp;&nbsp;'
+                + '<a id="'
+                + data
+                + '" data-id = "' + row._id + '" onclick="monitorConfig(this)" align="center" href="javascript:;" data-toggle="tooltip" title="参数设置" class="operate"><span class="glyphicon glyphicon-cog"></span></a>';
+        return html;
+    }
+
+    //设置查询时间段
+    function queryDate(v, date) {
+
+        $(v).addClass('active');
+//        $(v).addClass('btnGroupSelect');
+
+        var id = $(v).attr('id');
+
+        var all = $('#all-monitor').attr('id');
+        var today = $('#today-monitor').attr('id');
+        var yestoday = $('#yestoday-monitor').attr('id');
+        var week = $('#week-monitor').attr('id');
+        var custom = $('#custom-monitor').attr('id');
+        var templist = [all, today, yestoday, week, custom];
+
+        if (id == templist[4]) {
+            $('#l-form').css('display', 'block');
+            $('#start-time').focus();
+        } else {
+            $('#l-form').hide();
+            $('#l-form')[0].reset();
+            console.log()
+            time = date;
+            initTable();
+        }
+        for (var i = 0; i < templist.length; i++) {
+            if (id != templist[i]) {
+                $('#' + templist[i]).removeClass('active');
+//                $('#' + templist[i]).removeClass('btnGroupSelect');
+            }
+        }
+        /*switch (id) {
+            case all:
+                time = 0;
+                initTable();
+                break;
+            case today:
+                time = 1;
+                initTable();
+                break;
+            case yestoday:
+                time = 2;
+                initTable();
+                break;
+            case week:
+                time = 3;
+                initTable();
+                break;
+            case custom:
+                $('#start-time').focus();
+                break;
+        }*/
+    }
+
+    //异步数据
+    function retrieveData(sSource, aoData, fnCallback) {
+        var row = 10; //默认一次加载10条
+        var start = 0; //从第几条开始
+
+        startTime = $('#start-time').val();
+        endTime = $('#end-time').val();
+
+        $.each(eval(aoData), function (i, field) {
+            if (field.name == 'iDisplayStart') {
+                start = field.value;
+            }
+            if (field.name == 'iDisplayLength') {
+                row = field.value;
+            }
+        });
+        var apiName = $('#search-api-name').val();
+        $.getJSON(sSource, {
+            start: start,
+            row: row,
+            apiName: apiName,
+            monitorStatus: testStatus,
+            time: time,
+            startTime: startTime,
+            endTime: endTime
+        }, function (rm) {
+            if (rm.code === 1) {
+                var data = rm.result;
+                if (!data.data) {
+                    data.data = [];
+                }
+                data.iTotalRecords = data.total ? data.total : 0;
+                data.iTotalDisplayRecords = data.total ? data.total : 0;
+
+                //计算查询到的数量
+                if (testStatus == 0) {
+                    failureNum = data.total ? data.total : 0
+                    totalNum = failureNum + successNum;
+                } else if (testStatus == 1) {
+                    successNum = data.total ? data.total : 0
+                    totalNum = failureNum + successNum;
+                } else {
+                    totalNum = data.total ? data.total : 0;
+                }
+                $("#totalNum").html(totalNum);
+                $("#successNum").html(successNum);
+                $("#failureNum").html(failureNum);
+                fnCallback(data);
+            } else {
+                sweetAlert(rm.msg, "提示");
+            }
+        });
+    }
+
+    //跳转到日志界面
+    function lookMonitorLog(v, name) {
+        // 获取aid
+        logAid = $(v).attr('id');
+        logName = name;
+        url = "pages/monitorLogs.html"
+        $.ajax({
+            type: 'GET',
+            dataType: "html",
+            url: url,
+            cache: false,
+            success: function (msg) {
+                $("#mainPage").empty().html(msg);
+            }
+        });
+        $("html,body").animate({scrollTop: "0px"}, 0);
+    }
+
+    //启动或停止监控
+    function editMonitorStatus(v) {
+        $.ajax({
+            type: "get",
+            url: "api/monitor/" + pId + "/monitor/" + v.id,
+            success: function (rm) {
+                if (rm.code == 1) {
+                    if (rm.result) {
+                        switch (rm.result.ability) {
+                            case 0:
+                                startOrEnd(v, 1);
+                                break;
+                            case 1:
+                                startOrEnd(v, 0);
+                                break;
+                            case 2:
+                                swal({
+                                    title: "未配置参数",
+                                    text: "您还没有配置监控参数，不能启动",
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#DfD6B55",
+                                    confirmButtonText: "去配置",
+                                    cancelButtonText: "取消",
+                                    closeOnConfirm: true
+                                }, function (isConfirm) {
+                                    if (isConfirm) {
+                                        monitorConfig(v);
+                                        //弹出配置参数弹窗
+                                        /*var mid = $(v).data('id');
+                                        $('#config-modal.modal-title').text('监控配置');
+
+                                        $('#config-modal').modal({backdrop: 'static'});
+                                        $('#config-modal').modal('show');
+                                        $.ajax({
+                                            type: "get",
+                                            url: "/api/monitor/" + mid,
+                                            success: function (data) {
+                                                if (data.code == 1) {
+                                                    loadConfigDetail(data.result);
+                                                    $.ajax({
+                                                        type: "get",
+                                                        url: "/api/projects/" + data.result.pid + "/rest/" + data.result.aid,
+                                                        success: function (dataApi) {
+                                                            if (dataApi.code == 1) {
+                                                                $("#config-apimethod").text(dataApi.result.method.toUpperCase());
+                                                                $("#config-apiname").val(dataApi.result.name);
+                                                                loadParamsAndHeaders(dataApi.result, data.result);
+                                                            } else {
+                                                                swal({
+                                                                    title: data.msg,
+                                                                    confirmButtonText: "确定"
+                                                                });
+                                                            }
+                                                        }
+                                                    });
+                                                } else {
+                                                    swal({
+                                                        title: data.msg,
+                                                        confirmButtonText: "确定"
+                                                    });
+                                                }
+                                            }
+                                        });
+
+                                        //展示监控频率按钮组
+                                        $("#config-testInterval").find('button').each(function (index, e) {
+                                            if (index != 4) {
+                                                $(e).text(intervalArray[index]);
+                                                $(e).click(function () {
+                                                    console.log($(e).hasClass('active'));
+                                                    if (!$(e).hasClass('active')) {
+                                                        console.log($(this).text());
+                                                        //$(e).addClass("active button-active");
+                                                        //$(e).siblings().removeClass("active button-active");
+                                                        if (index == 4) {
+                                                            $('#config-editTestInterval').css('visibility', 'visible');
+                                                            $('#timeUnit').css('visibility', 'visible');
+                                                        } else {
+                                                            $('#config-editTestInterval').css('visibility', 'hidden');
+                                                            $('#timeUnit').css('visibility', 'hidden');
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });*/
+                                    }
+                                });
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    //编辑启动/暂停状态
+    function startOrEnd(v, op) {
+        $.ajax({
+            type: "put",
+            url: "api/monitor/apis/status",
+            data: {
+                rid: v.id,
+                op: op
+            },
+            success: function (rm) {
+                if (rm.code == 1) {
+                    if (rm.result.monitorStatus == 0) {
+                        $(v).children('span').replaceWith('<span id="startOrPause" class="glyphicon glyphicon-pause text-green"></span>');
+                    } else {
+                        $(v).children('span').replaceWith('<span id="startOrPause" class="glyphicon glyphicon-play icon-warning"></span>');
+                    }
+                }
+                initTable();
+            }
+        });
+    }
+
+    //删除监控
+    function delMonitor(v) {
+        swal({
+            title: "确定要删除吗?",
+            text: "删除监控将看不到API的测试结果信息，请谨慎操作！",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            closeOnConfirm: false
+        }, function (isConfirm) {
+            if (isConfirm) {
+                $.ajax({
+                    type: "delete",
+                    url: "api/monitor/" + v.id,
+                    success: function (data) {
+                        if (data.code == 1) {
+                            swal({
+                                title: "删除成功",
+                                confirmButtonText: "确定"
+                            });
+
+                        } else {
+                            swal({
+                                title: "未能成功删除",
+                                confirmButtonText: "确定"
+                            });
+                        }
+                        initTable();
+                    }
+                });
+            } else {
+            }
+        });
+    }
+
+    //!------------------------------yhl-监控配置---------------------------------------
+    //按钮
+//    var intervalArray = [];
+//    intervalArray.push('15');
+//    intervalArray.push('20');
+//    intervalArray.push('30');
+//    intervalArray.push('60');
+//    intervalArray.push('自定义');
+    //按钮数值
+    var intervalNumArray = [];
+    intervalNumArray.push(15);
+    intervalNumArray.push(20);
+    intervalNumArray.push(30);
+    intervalNumArray.push(60);
+    var headersNum = 0;
+    var paramsNum = 0;
+
+
+    //初始化监控配置弹窗
+    function monitorConfig(v) {
+        var mid = $(v).data('id');
+//        $('#config-modal.modal-title').text('监控配置');
+
+        $('#config-modal').modal({backdrop: 'static'});
+        $('#config-modal').modal('show');
+        $.ajax({
+            type: "get",
+            url: "/api/monitor/" + mid,
+            success: function (data) {
+                if (data.code == 1) {
+                    loadConfigDetail(data.result);
+                    $.ajax({
+                        type: "get",
+                        url: "/api/projects/" + data.result.pid + "/rest/" + data.result.aid,
+                        success: function (dataApi) {
+                            if (dataApi.code == 1) {
+                                $("#config-apimethod").text(dataApi.result.method.toUpperCase());
+                                $("#config-apiname").val(dataApi.result.name);
+                                loadParamsAndHeaders(dataApi.result, data.result);
+                            } else {
+                                swal({
+                                    title: data.msg,
+                                    confirmButtonText: "确定"
+                                });
+                            }
+                        }
+                    });
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+
+        //展示监控频率按钮组
+        $("#config-testInterval").find('button').each(function (index, e) {
+//            if (index != 4) {
+//                console.log(intervalArray[index])
+//                $(e).text(intervalArray[index]);
+                $(e).click(function () {
+                    if (!$(e).hasClass('active')) {
+                        $(e).addClass('active');
+                        $(e).siblings().removeClass('active');
+                        if (index == 4) {
+                            $('#config-editTestInterval').css('visibility', 'visible');
+                            $('#timeUnit').css('visibility', 'visible');
+                        } else {
+                            $('#config-editTestInterval').css('visibility', 'hidden');
+                            $('#timeUnit').css('visibility', 'hidden');
+                        }
+                    }
+                });
+//            }
+        });
+    }
+    //加载配置详情
+    function loadConfigDetail(result) {
+        var r = result;
+        $("#config-ability").val(r.ability);
+        $("#config-mid").val(r.id);
+        $("#config-apiName").text(r.name);
+        $("#config-testurl").val(r.monitorUrl);
+        $("#config-warnningEmail").val(r.email);
+        $("#config-warnningRule").val(r.alarmtype);
+        $("#config-matchingContent").val(r.expectdata);
+
+        changeView(Number(r.alarmtype));
+        if(Number(r.alarmtype) == 1) {
+            $("#config-miniInterval").val(r.alarminterval);
+        }
+        /*switch (Number(r.alarmtype)) {
+            case 0:
+                $('#miniIntervalLabel').css('visibility', 'hidden');
+                $('#config-miniInterval').css('visibility', 'hidden');
+                $('#warnningTimeUnit').css('visibility', 'hidden');
+                break;
+            case 1:
+                $('#miniIntervalLabel').css('visibility', 'visible');
+                $('#config-miniInterval').css('visibility', 'visible');
+                $('#warnningTimeUnit').css('visibility', 'visible');
+                $("#config-miniInterval").val(r.alarminterval);
+                break;
+        }*/
+
+        //监控频率
+        var monitorInterval = r.monitorinterval;
+        var arrayIndex = _.indexOf(intervalNumArray, monitorInterval);
+        if (arrayIndex != -1) {
+            $('#config-editTestInterval').css('visibility', 'hidden');
+            $('#timeUnit').css('visibility', 'hidden');
+        } else {
+            arrayIndex = 4;
+            $('#config-editTestInterval').css('visibility', 'visible');
+            $('#timeUnit').css('visibility', 'visible');
+            $("#config-editTestInterval").val(monitorInterval);
+        }
+        $("#config-testInterval").find('button').each(function (index, e) {
+            if (arrayIndex == index) {
+                $(e).addClass('active');
+                $(e).siblings().removeClass('active');
+            }
+        });
+
+    }
+    //加载参数和头部
+    function loadParamsAndHeaders(resultApi, result) {
+        var ra = resultApi;
+        var r = result;
+
+//        //监控Headers
+//        var totalHeaders = [];
+//        headersNum = r.monitorHeaders.length;
+//        if (headersNum) {
+//            $("#configHeaders").css('display','');
+//            for(var i=0;i<r.monitorHeaders.length;i++){
+//                var head = new Array();
+//                var headkey = ra.data[i].key;
+//                var headvalue = null;
+//                if(r.monitorHeaders){
+//                    paravalue = r.monitorHeaders[0][parakey];
+//                }
+//                para.push('<div class="form-group" style="background-color: #eee;padding:5px;margin-left:0px;width: 100%">' +
+//                             '<label class="col-sm-2  control-label" style="background-color: #eee;text-align: center;" id="paramsKey'+ i +'">'+headkey+'</label>' +
+//                             '<div class="col-sm-10" style="background-color: #eee;">' +
+//                                '<input class="form-control underline-input" style="background-color: #eee;" id="paramsValue'+i+'" placeholder="值" value="'+headvalue+'">' +
+//                             '</div>'+
+//                          '</div>');
+//                    }
+//                    $("#configHeaders").empty().append(totalHeaders);
+//         } else {
+//             $("#configHeaders").css('display','none');
+//         }
+
+        //监控参数
+        var totalParams = [];
+        paramsNum = ra.data.length;
+        if (paramsNum) {
+            $("#configParams").css('display', '');
+            for (var i = 0; i < ra.data.length; i++) {
+                var para = new Array();
+                var parakey = ra.data[i].key;
+                var paravalue = null;
+                if (r.monitorApiParams) {
+                    paravalue = r.monitorApiParams[0][parakey];
+                }
+                para.push('<div class="form-group" style="background-color: #eee;padding:5px;margin-left:0px;width: 100%">' +
+                        '<label class="col-sm-2  control-label" style="background-color: #eee;text-align: center;" id="paramsKey' + i + '">' + parakey + '</label>' +
+                        '<div class="col-sm-10" style="background-color: #eee;">' +
+                        '<input class="form-control underline-input" style="background-color: #eee;" id="paramsValue' + i + '" placeholder="值" value="' + paravalue + '">' +
+                        '</div>' +
+                        '</div>')
+                totalParams.push(para.join(''));
+            }
+            $("#configParams").empty().append(totalParams);
+        } else {
+            $("#configParams").css('display', 'none');
+        }
+    }
+
+    function changeView(value) {
+        var val = Number(value);
+
+        switch (val) {
+            case 0:
+                $('#miniIntervalLabel').css('visibility', 'hidden');
+                $('#config-miniInterval').css('visibility', 'hidden');
+                $('#warnningTimeUnit').css('visibility', 'hidden');
+                break;
+            case 1:
+                $('#miniIntervalLabel').css('visibility', 'visible');
+                $('#config-miniInterval').css('visibility', 'visible');
+                $('#warnningTimeUnit').css('visibility', 'visible');
+                break;
+        }
+    }
+
+    //保存监控配置
+    function saveConfig() {
+        var ability = $("#config-ability").val();
+
+        if (ability == 2) {
+            ability = 1;
+        }
+        var mid = $("#config-mid").val();
+        var monitorUrl = $("#config-testurl").val();
+        var email = $("#config-warnningEmail").val();
+        var expectdata = $("#config-matchingContent").val();
+        var monitorHeaders = {};
+        var monitorApiParams = {};
+
+        for (var i = 0; i < headersNum; i++) {
+            var key = $("#headersKey" + i).val();
+            var value = $("#headersValue" + i).val();
+            monitorHeaders[key] = value;
+        }
+
+        for (var i = 0; i < paramsNum; i++) {
+            var key = $("#paramsKey" + i).val();
+            var value = $("#paramsValue" + i).val();
+            monitorApiParams[key] = value;
+        }
+
+        var alarmtype = $("#config-warnningRule").val();
+        if (alarmtype == 1) {
+            var alarminterval = $("#config-miniInterval").val();
+        } else {
+            var alarminterval = 0;
+        }
+
+        var monitorinterval = 0;
+        //展示监控频率按钮组
+        $("#config-testInterval").find('button').each(function (index, e) {
+//            if (index != 4) {
+                if ($(e).hasClass('active')) {
+                    if (index == 4) {
+                        monitorinterval = $("#config-editTestInterval").val();
+                    } else {
+                        monitorinterval = intervalNumArray[index];
+                    }
+                }
+//            }
+        });
+
+        $.ajax({
+            type: "post",
+            url: "/api/monitor/" + mid,
+            data: {
+                monitorUrl: monitorUrl,
+                monitorApiParams: monitorApiParams,
+                monitorHeaders: monitorHeaders,
+                email: email,
+                alarmtype: alarmtype,
+                alarminterval: alarminterval,
+                monitorinterval: monitorinterval,
+                expectdata: expectdata,
+                ability: ability
+            },
+            success: function (data) {
+                if (data.code == 1) {
+                    swal({
+                        title: "配置成功!",
+                        confirmButtonText: "确定",
+                    });
+                    $("#config-modal").modal('hide');
+                    initTable();
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                    $("#config-modal").modal('hide');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (XMLHttpRequest.status == 413) { // 请求实体太大。
+                    swal({
+                        title: "您输入内容太大,请重新输入!",
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+
+    }
+
+    //TODO 初始化展示信息
+    function Initialization() {
+    }
+
+    //展示被监控API信息
+    function showMonitorMsg(msg) {
+
+    }
+    /*  function returnAPI() {
+     clearInterval(cycle);
+     $("#mainPage").load("pages/monitorApi.html");
+     $("html,body").animate({scrollTop: "0px"}, 0);
+     }*/
+
+</script>
+
+
+<!--弹出框相关-->
+<script>
+    //获取API的URL
+    //    var url = "http://localhost:3000/api/monitor/projects/"+$("#pIdSave").val()+"/nomonitor";
+    //添加APi的URL
+    //    var url = "api/monitor/projects/"+$("#pIdSave").val()+"/rest";
+    function initNomonitorTable() {
+        //先销毁，不然会报重复初始化的错误
+        $('#nomonitor-table').dataTable().fnDestroy();
+        $('#nomonitor-table').dataTable({
+            'bAutoWidth': false,
+            //不显示加载过程
+            'bProcessing': false,
+            //本地数据集，测试使用
+//            'data':dataset,
+            // 获取路径
+            'sAjaxSource': "api/monitor/projects/" + $("#pIdSave").val() + "/nomonitor",
+            // 与后台交互获取数据的处理函数
+            'fnServerData': getData,
+            // 将之前的那个数据对象清除掉，换以新的对象设置
+            'bDestroy': true,
+            // 用于指明当执行dataTable绑定时，是否返回DataTable对象
+            'bRetrieve': true,
+            // 加载的数据列表的名称
+            'sAjaxDataProp': 'result',
+            // 一行显示6条数据
+            'iDisplayLength': 6,
+            // 关闭过滤
+            'bFilter': false,
+            // 关闭用户选择显示的数据条数
+            'bLengthChange': false,
+            // 列的宽度是否自适应
+            'bAutoWidth': false,
+            // 关闭排序
+            'bSort': false,
+//            'fnDrawCallback':drawover,
+            // 汉化语言
+            'oLanguage': {
+                'sInfo': '  共 _TOTAL_ 项'
+            },
+            //添加数据
+            'aoColumns': [
+                {
+                    width: '80px',
+                    mData: 'name',
+                    'mRender': nameRender
+                }, {
+                    width: '70px',
+                    mData: 'group',
+                    mRender: groupRender
+                }, {
+                    width: '7px',
+                    mData: 'method',
+                    mRender: methodRender
+                }, {
+                    width: '150px',
+                    mData: 'urlsuffix',
+                    mRender: urlRender
+                }
+            ]
+
+        });
+    }
+    $("#addMonitor").click(function () {
+        initNomonitorTable();
+    });
+
+    //渲染API名称，包括前面的checkbox
+    function nameRender(data, type, row) {
+        return '<div class="skin skin-square name " style="padding-left: 10px;"><input type="checkbox"><div style="margin-left: 15px;display: inline-block">' + cutString(row.name, 10) + '</div></div>';
+    }
+
+    //渲染分组名
+    function groupRender(data, type, row) {
+        return "<div style='padding-left: 10px' class='group'>" + row.group + "</div>"
+    }
+
+    //渲染请求方法
+    function methodRender(data, type, row) {
+        var method = (row.method).toUpperCase();
+        var rowTmpl;
+        switch (method) {
+            case 'GET':
+                rowTmpl = '<span class="label label-primary method">GET</span>'
+                break;
+            case 'POST':
+                rowTmpl = '<span class="label label-success method">POST</span>'
+                break;
+            case 'PUT':
+                rowTmpl = '<span class="label label-info method">PUT</span>'
+                break;
+            case 'DELETE':
+                rowTmpl = '<span class="label label-warning method">DELETE</span>'
+                break;
+        }
+        return rowTmpl
+    }
+
+    //渲染URL
+    function urlRender(data, type, row) {
+        return '<span class="myclass url" style="margin-left: -10px;width: 150px;overflow: hidden">' + cutString(data, 30) + '</span>';
+    }
+
+    //全选函数
+    $("#all-checked").click(function () {
+        $("#table-tbody :checkbox").each(function () {
+            this.checked = true;
+        });
+    });
+    //反选函数
+    $("#all-unchecked").click(function () {
+        $("#table-tbody :checkbox").each(function () {
+            if (this.checked) {
+                this.checked = false;
+            } else {
+                this.checked = true;
+            }
+        });
+    })
+
+    //查询点击事件
+    $("#search_btn").click(function () {
+        initNomonitorTable();
+    })
+    //查询键盘事件
+    $(document).keydown(function (event) {
+        if (event.keyCode == 13) {
+            initNomonitorTable();
+        }
+    });
+
+    //确定按钮的点击事件
+    $("#addmonitor_surebtn").click(function () {
+        var idlist = [];
+        var datas = $("#nomonitor-table").dataTable().fnGetData();
+        var rows = $("#nomonitor-table").dataTable().fnGetNodes();
+        for (var i = 0; i <= rows.length - 1; i++) {
+            if ($(rows[i]).find(":checkbox").is(":checked")) {
+                idlist.push(datas[i].id)
+            }
+        }
+        var param = {
+            "rid": idlist
+        }
+        var url = "api/monitor/projects/" + $("#pIdSave").val() + "/rest";
+//        var url = "api/monitor/projects/2/rest";
+        $.post(url, param, function (data, status) {
+            if(data.code == 1) {
+                swal({
+                    title: '添加成功！',
+                    confirmButtonText: '确定',
+                });
+            } else {
+                swal({
+                    title: data.msg,
+                    confirmButtonText: '确定',
+                });
+            }
+            initTable();
+        });
+    });
+
+    //获网络数据
+    function getData(sSource, aoData, fnCallback) {
+        var search_word = $("#search_word").val();
+        $.getJSON(sSource, {
+            word: search_word,//查询的关键字
+            monitorStatus: 0
+        }, function (rm, textStatus, jqXHR) {
+            if (rm.code === 1) {
+                fnCallback(rm);
+                //设置tr的点击事件
+                var rows = $("#nomonitor-table").dataTable().fnGetNodes();
+                $(rows).each(function () {
+                    $(this).click(function () {
+                        if ($(this).find(":checkbox").is(":checked")) {
+                            $(this).find(":checkbox").prop("checked", false);
+                        } else {
+                            $(this).find(":checkbox").prop("checked", true);
+                        }
+                    });
+                });
+                //设置tr上显示详细信息
+                var datas = $("#nomonitor-table").dataTable().fnGetData();
+                for (var i = 0; i <= rows.length - 1; i++) {
+                    if ((datas[i].name).length > 5) {
+                        //用户名的详细信息，超过10个字符的显示
+                        $(rows[i]).find(".name").attr("title", datas[i].name)
+                        $(rows[i]).find(".name").attr("data-toggle", "tooltip")
+                        $(rows[i]).find(".name").attr("data-placement", "bottom")
+                    }
+                    if ((datas[i].urlsuffix).length > 28) {
+                        //URL的详细信息
+                        $(rows[i]).find(".url").attr("title", datas[i].urlsuffix)
+                        $(rows[i]).find(".url").attr("data-toggle", "tooltip")
+                        $(rows[i]).find(".url").attr("data-placement", "bottom")
+                    }
+                }
+            }
+        });
+    }
+
+    //字符串截取函数
+    function cutString(str, len) {
+        //length属性读出来的汉字长度为1
+        if (str.length * 2 <= len) {
+            return str;
+        }
+        var strlen = 0;
+        var s = "";
+        for (var i = 0; i < str.length; i++) {
+            s = s + str.charAt(i);
+            if (str.charCodeAt(i) > 128) {
+                strlen = strlen + 2;
+                if (strlen >= len) {
+                    return s.substring(0, s.length - 1) + "...";
+                }
+            } else {
+                strlen = strlen + 1;
+                if (strlen >= len) {
+                    return s.substring(0, s.length - 2) + "...";
+                }
+            }
+        }
+        return s;
+    }
+    // 表单重置
+    function reSetSearch() {
+        $('#search-api-name').val('');
+        initTable();
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,110 @@
+
+a {
+	color: #00B7FF;
+}
+
+.navagation > ul > li > ul a {
+	text-align: left;
+	padding: 15px 20px;
+	width: 156px;
+}
+
+.main-page {
+    background: #eee none repeat scroll 0 0;
+    color: #5b5b5b;
+    font-size: 13px;
+    padding: 20px;
+}
+
+.content{
+	background: #fff none repeat scroll 0 0;
+}
+
+.content-body{
+    padding: 10px;
+}
+.content-head{
+    border-bottom: 3px solid #cac6c1;
+    height: 62px;
+    padding: 10px;
+    position: relative;
+}
+.content-head .title {
+    float: left;
+    font-size: 16px;
+    padding: 10px;
+}
+.content-head .title a {
+    color: #5cb85c;
+    padding: 10px;
+}
+
+.content-head .title a:hover, .content-head .title a:focus {
+    color: #fff;
+    background: #5cb85c;
+}
+
+.text-red{
+	color:#d9534f;
+}
+
+.text-blue{
+	color:#337ab7;
+}
+
+.text-yellow{
+	color:#f69f15
+}
+
+.text-green{
+	color:#5cb85c
+}
+
+.datepicker td.active:hover, .datepicker td.active:hover:hover, .datepicker td.active:focus, .datepicker td.active:hover:focus, .datepicker td.active:active, .datepicker td.active:hover:active, .datepicker td.active.active, .datepicker td.active.active:hover, .datepicker td.active.disabled, .datepicker td.active.disabled:hover, .datepicker td.active[disabled], .datepicker td.active[disabled]:hover {
+    background-color: #5cb85c;
+    color: #ffffff;
+}
+
+.underline-input{
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom:1px solid #757575;
+    padding: 0px;
+    margin: 0px;
+}
+
+/*.button-active{
+    color: white;
+}*/
+
+.btn-group button.active{
+    color: white;
+}
+
+.pagination > li > a, .pagination > li > span {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #5cb85c;
+    float: left;
+    line-height: 1.42857;
+    margin-left: -1px;
+    padding: 6px 12px;
+    position: relative;
+    text-decoration: none;
+}
+
+.pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
+    background-color: #5cb85c;
+    border: 1px solid #5cb85c;
+    color: #fff;
+    cursor: default;
+    z-index: 2;
+}
+
+.pagination > li > a:focus, .pagination > li > a:hover, .pagination > li > span:focus, .pagination > li > span:hover {
+    background-color: #eee;
+    border-color: #ddd;
+    color: #5cb85c;
+}
+

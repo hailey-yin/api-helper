@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+    body {
+        font-family: '微软雅黑';
+    }
+    /*左侧菜单*/
+    .sidebar-menu{
+    /*border-right: 1px solid #c4c8cb;*/
+        margin-bottom: 20px;
+    }
+    .sideproject{
+        display:block;
+        width: 92%;
+        height: 40px;
+        /*text-align: center;*/
+        padding-left: 5px;
+        line-height: 40px;
+        font-family: '微软雅黑';
+        font-size: 15px;
+        color: black;
+    }
+    /*一级菜单鼠标划过状态*/
+    .sideproject:hover{
+        background: #eee;
+    }
+        .bg-green {
+            background: #009966;
+            display: block;
+            height: 18px;
+            width: 55px;
+            text-align: center;
+        }
+    .bg-blue {
+        background: #0099cc;
+        display: block;
+        height: 18px;
+        width: 55px;
+        text-align: center;
+    }
+    .bg-red {
+        background: #ff0033;
+        display: block;
+        height: 18px;
+        width: 55px;
+        text-align: center;
+    }
+        .memberTable {
+            height:40px;
+            width:100%;
+            line-height:40px;
+            dispaly:block;
+            border-top: 1px solid transparent;
+            border-color:#e7e9ed;
+            background-color: white;
+        }
+        .memberTable:hover {
+            background: #F5FFFA;
+        }
+        .userchoosecheckbox {
+            float: right;
+            display: none;
+        }
+
+        .bg-eee {
+            background:#5b5b5b;
+            color: #FFFFFF;
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+        .authnameli {
+            list-style-type:none;
+            margin-top:2px;
+            margin-left:5px;
+            float: left
+        }
+        .glyphicon-remove {
+            cursor:pointer;
+        }
+    .glyphicon-remove:hover{
+        color: #bdbdbd;
+    }
+    .typeSelect {
+        width: 100%;
+        background: #FFFFFF;
+        border: 1px solid #bdbdbd;
+        border-radius: 0;
+        font-size: 15px;
+    }
+    </style>
+</head>
+<body>
+<div id="authContainer" class="container">
+    <br class="row">
+        <!--<div id="tips" style="text-align: center;margin-top: 100px;display: none"><img src="../images/project-pic.png"><span style="font-size: 40px;margin-left: 20px">没有项目</span></div>-->
+        <div class="col-md-3 col-sm-3 col-lg-3 sidebar-menu" style="margin-top:20px;padding:0">
+            <h4>项目名称</h4>
+            <hr style="height:1px;border:none;border-top:1px solid #e7e9ed;margin-right: 15px" />
+            <div>
+                <input type="text" class="searchInput" placeholder="搜索项目" id="proSearch" style="width: 92%">
+                <a href="javascript:void(0)" onclick="proSearch()" style="position: absolute;
+    top: 82px;
+    right: 32px;
+    font-size: 16px;
+    color: #5b5b5b;">
+                    <span class="glyphicon glyphicon-search"></span>
+                </a>
+            </div>
+            <div style="height: 20px"></div>
+            <div id="sideMenu"></div>
+        </div>
+        <div id="rightCon" class="col-md-9 col-sm-9 col-lg-9" style="margin-top:18px;border-left:1px solid #cac6c1;">
+            <h4 id = "tips" style="display: none">没有项目，请先新增项目</h4>
+            <div class="contentRight" id="rightContent" style="display: none">
+                <h4><span class="glyphicon glyphicon-file"></span>&nbsp<span style="font-size:15px" id="headName"></span></h4>
+                <hr style="height:1px;border:none;border-top:1px solid #e7e9ed;" />
+                <!--新增成员-->
+                <div id="newAuth">
+                    <div class="row">
+                        <div class="col-md-7 col-sm-7 col-lg-7">
+                            <input type="text" class="searchInput" style="width: 100%" placeholder="查询项目中存在的用户" id="memberSearch">
+                            <a href="javascript:void(0)" onclick="memberSearch()" style="position: absolute;top: 10px;right: 25px;font-size: 16px;color: #5b5b5b;">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </a>
+                        </div>
+                        <div class="col-md-4 col-sm-4 col-lg-4" >
+                    <button id="add_button" type="button" class="btn green_btn" style="width: 49%;height: 40px;margin-left: -10px" onclick="addMember()">新增成员<span style="margin-left: 5px;top:3px" class="changeIcon glyphicon glyphicon-chevron-down"></span></button>
+                    </div>
+                        </div>
+                        <form id="auth-form" class="form-horizontal" style="margin-top:40px;display:none;">
+                        <div class="modal-body" style="padding-left: 0">
+                            <div class="form-group">
+                                <label class="col-sm-3 col-md-2 col-lg-1 control-label" for="authname">用户</label>
+                                <div class="col-sm-6 col-md-7 col-lg-8" style="padding-right: 0">
+                                    <ul class="form-control" style="height:auto;display: inline-block;box-sizing: border-box;">
+                                        <span id="muluser"></span>
+                                    <input id="authname" name="name" style="margin-left:10px;border: none;float: left;width:100px" class="dropdown-toggle" onkeyup="checkUserName()" autocomplete="off" data-toggle="dropdown" type="text" placeholder="请输入用户名">
+                                        <div id="allChoose" class="dropdown-menu" style="left: 15px;border-bottom:none;width:97.5%;border-radius: 0;z-index: 1000;background:#e7e9ed">
+                                            <button type="button" class="green_btn" onclick="allChoose(event)" style="margin-left: 20px;background:#00cc00;height: 30px;width: 80px;border:none;font-size: 10px"><span class="glyphicon glyphicon-th-list" style="margin-right: 5px"></span>批量选择</button>
+                                            <button type="button" id="mulSave" class="green_btn" onclick="mulChoose()" style="float: right;background:#00cc00;height: 30px;margin-right: 25px;border:none;display: none;font-size: 10px">确定</button>
+                                        </div>
+                                        <ul id="userInput" class="dropdown-menu" style="left: 15px;border-top:none;margin-top:45px;width:97.5%;border-radius: 0;height: 200px;overflow-y:scroll">
+                                        </ul>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 col-md-2 col-lg-1 control-label">权限</label>
+                                <div class="col-sm-6 col-md-7 col-lg-8" style="padding-right: 0">
+                                    <select id="auth-select" class="form-control selectpicker"  tabindex="4" style="width: 100%">
+                                        <option value="1">查看</option>
+                                        <option value="2">编辑</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-md-5 col-lg-6">
+                            </div>
+                            <div>
+                            <button id="modal_button" type="button" class="btn green_btn" style="width: 100px" onclick="addAuth()">确定</button>
+                            <button id="cancel_button" type="button" class="btn black_btn" style="width: 100px" onclick="resetCancel()">取消</button>
+                        </div>
+                    </form>
+                </div>
+                <hr style="height:2px;border:none;border-top:1px ridge #e7e9ed;" />
+                <!--项目成员内容-->
+                <div style="height:50px;font-size:16px;width:100%;line-height:50px;dispaly:block;border-top: 1px solid transparent;border-color:#e7e9ed;background-color: #FCFCFC"><span  style="margin-left: 10px;">项目成员</span></div>
+                <div id="result"></div>
+               <!--jsrender渲染每行内容-->
+                <script id="theTmpl" type="text/x-jsrender">
+            <div>
+                <div class="memberTable">
+   {{if name != undefined}}
+   <span style="margin-left:10px">{{:name}}</span>
+   <div class="pull-right" style="margin-right:10px">
+   {{if status == 0}}
+      <strong>创建者</strong>
+   {{/if}}
+   {{if status == 1}}
+      <strong>查看</strong>
+   {{/if}}
+    {{if status == 2}}
+      <strong>编辑</strong>
+   {{/if}}
+   {{if status != 0}}
+   <a href="javascript:void(0)" id={{:id}} data-status={{:status}} onclick="editAuth(this)"><i class="glyphicon glyphicon-edit icon-warning" style="color:#449d44"></i></a>
+   <a href="javascript:void(0)" id={{:id}} onclick="delUser(this)"><i class="glyphicon glyphicon-trash icon-danger" style="color:#449d44"></i></a>
+   </div>
+   <div class="authCheck" style="display:none">
+   <div style="text-align:center">
+   <select id="auth-select" class="form-control"  tabindex="4" style="margin-left:10px;;width: 98%">
+       <option value="1">查看</option>
+       <option value="2">编辑</option>
+   </select>
+   </div>
+    <button type="button" data-user={{:id}} class="btn green_btn" style="width: 60px;float:right;margin-right:7px;margin-top:3px" onclick="editSave(this)">保存</button>
+    </div>
+    {{/if}}
+    {{else}}
+    <div>未找到该成员</div>
+    {{/if}}
+</div>
+</div>
+</script>
+                    <div style=" height:1px;width:100%;border-top: 1px solid #e7e9ed;"></div>
+                </div>
+            <div style=" height:20px;width:100%;"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        $("#auth-select").selectpicker({
+            style: 'typeSelect'
+        });
+        getProjects();
+        $('#authContainer').css({"height": (document.documentElement.clientHeight - 262)+'px'});
+        $('#rightCon').css({"min-height": (document.documentElement.clientHeight - 202)+'px'});
+        //点击用户框出现下拉菜单后的一系列初始化操作
+        $('#authname').click(function() {
+            getUser();
+            mulChooseTag = false;
+            $('.userchoosecheckbox').hide();
+            $('#mulSave').hide();
+            $("input[name='checkbox']:checkbox").each(function(){
+                $(this)[0].checked = false;
+            })
+        });
+    });
+
+    var originHeight;        //保存最初高度
+
+    //点击编辑权限
+    function editAuth(v) {
+        var tempheight = originHeight + $('.authCheck').height() + 5;
+        if($(v).parent().parent().children("div:last").css('display') == 'none') {
+            $(v).children().removeClass('glyphicon glyphicon-edit icon-warning');
+            $(v).children().addClass('glyphicon glyphicon-chevron-down');
+            $(v).parent().parent().height(tempheight);
+            $(v).parent().parent().children("div:last").children(":first").children().val($(v).data('status'));
+            $(v).parent().parent().children("div:last").show();
+        }else {
+            $(v).children().removeClass('glyphicon glyphicon-chevron-down');
+            $(v).children().addClass('glyphicon glyphicon-edit icon-warning');
+            $(v).parent().parent().height(originHeight);
+            $(v).parent().parent().children("div:last").hide();
+        }
+    }
+
+    //删除用户
+    function delUser(v) {
+        var id = $(v).attr('id');
+        sweetAlert({
+            title: "提示",
+            text: "您确定要删除该用户吗？",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#5cb85c",
+            cancelButtonText:"取消",
+            confirmButtonText: "确定",
+            closeOnConfirm: false,
+        }, function(){
+            $.ajax({
+                type: 'DELETE',
+                url: 'api/authority/' + id,
+                data:{pid:tempPid},
+                dataType: 'json',
+                success: function (rm) {
+                    if (1 === rm.code) {
+                        sweetAlert('删除成功');
+                        showAuth();
+                    }
+                }
+            });
+        });
+    }
+
+    //搜索项目
+    function proSearch() {
+        $.getJSON('api/authority/projects',{id:userId,name:$('#proSearch').val()},function (rm) {
+            if (rm.code == 1) {
+                if (rm.result.length > 0) {
+                    $('#sideMenu').empty();
+                    for (var i = 0; i < rm.result.length; i++) {
+                        $('#sideMenu').append('<div><a href="javascript:void(0)" id=' + rm.result[i]._id + ' data-auth='+rm.result[i].authStatus+' class="sideproject" onclick="authManage(this)">' + rm.result[i].name + '</a></div>');
+                    }
+                    $("#" + rm.result[0]._id).trigger("click");
+                } else {
+                    sweetAlert('未找到项目');
+                }
+            }else {
+                sweetAlert('搜索失败');
+            }
+        });
+    }
+
+    //搜索成员
+    function memberSearch() {
+        $.getJSON('api/authority',{pid:tempPid,name:$('#memberSearch').val()},function (rm) {
+            if (rm.code == 1) {
+                var data = rm.result;
+                if(data.length < 1) {
+                    data.push('')
+                }
+                var template = $.templates("#theTmpl");
+                var htmlOutput = template.render(data);
+                $("#result").html(htmlOutput);
+                originHeight = $('.memberTable').height();
+            } else {
+//                jAlert(rm.msg, '提示');
+            }
+        });
+    }
+
+    //输入用户名时的下拉索引
+    function checkUserName() {
+        $('#userInput').empty();
+        var users = getMulUsers();
+        for(var i=0;i<tempUserList.length;i++) {
+            users.push(tempUserList[i].name);
+        }
+        $.getJSON('api/authority/users',{name:$('#authname').val(),users:users},function (rm) {
+            if (rm.code == 1) {
+                for(var i=0;i < rm.result.length;i++) {
+                    $('#userInput').append('<li><a href="javascript:void(0)" onclick="selectUser(this)">'+rm.result[i].name+'<input class="userchoosecheckbox" type="checkbox" name="checkbox" data-name='+rm.result[i].name+ ' onclick="checkChoose(this,event)"></a></li>');
+                }
+            } else {
+//                jAlert(rm.msg, '提示');
+            }
+        });
+    }
+
+    //获取所有用户
+    function getUser() {
+        $('#userInput').empty();
+        var users = getMulUsers();
+        for(var i=0;i<tempUserList.length;i++) {
+            users.push(tempUserList[i].name);
+        }
+        $.getJSON('api/authority/users',{users:users},function (rm) {
+            if (rm.code == 1) {
+                for(var i=0;i < rm.result.length;i++) {
+                    $('#userInput').append('<li><a href="javascript:void(0)" onclick="selectUser(this,event)">'+rm.result[i].name+'<input class="userchoosecheckbox" type="checkbox" name="checkbox" data-name='+rm.result[i].name+ ' onclick="checkChoose(this,event)"></a></li>');
+                }
+            } else {
+//                jAlert(rm.msg, '提示');
+            }
+        });
+    }
+
+    var mulChooseTag = false;   //用来记录是否进入批量选择模式
+
+    //批量选择
+    function allChoose(e) {
+        e.cancelBubble = true;  //阻止冒泡事件机制
+        $('.userchoosecheckbox').show();
+        $('#mulSave').show();
+        mulChooseTag = true;
+    }
+
+    function checkChoose(v,e) {
+        e.cancelBubble = true;  //阻止冒泡事件机制
+    }
+
+    function mulChoose() {
+        $("input[name='checkbox']:checkbox").each(function(){
+            if($(this)[0].checked){
+            $('#muluser').append('<li class="authnameli" data-name='+$(this).data('name')+'><div class="bg-eee">'+$(this).data('name')+'<span class="glyphicon glyphicon-remove" onclick="delMulUser(this)"></span></div></li>');
+            }
+        })
+        mulChooseTag = false;
+    }
+
+    //编辑用户权限后的保存
+    function editSave(v) {
+        var auth = $(v).prev().children().val();
+        var userId = $(v).data('user');
+        $.ajax({
+            type: 'POST',
+            url: 'api/authority/edit',
+            data: {
+                id: userId,
+                auth: auth,
+                pid : tempPid
+            },
+            success: function (rm) {
+                if (rm.code === 1) {
+                    sweetAlert({timer:2000,title: "修改成功"});
+                    showAuth();
+                } else {
+                    sweetAlert(rm.msg);
+                }
+            }
+        });
+    }
+
+    //点击新增用户按钮
+    function addMember() {
+       if($('#auth-form').css('display') == 'none') {
+            $('#auth-form').show();
+           $('.changeIcon').removeClass('glyphicon-chevron-down');
+           $('.changeIcon').addClass('glyphicon-chevron-up');
+       }else {
+           $('#auth-form').hide();
+           $('.changeIcon').removeClass('glyphicon-chevron-up');
+           $('.changeIcon').addClass('glyphicon-chevron-down');
+       }
+    }
+
+    //获取所有项目
+    function getProjects() {
+        $.getJSON('api/authority/projects',{id:userId},function (rm) {
+            if (rm.code == 1) {
+                if (rm.result.length > 0) {
+                    for (var i = 0; i < rm.result.length; i++) {
+                        $('#sideMenu').append('<div><a href="javascript:void(0)" id=' + rm.result[i]._id + ' data-auth='+rm.result[i].authStatus+' class="sideproject" onclick="authManage(this)">' + rm.result[i].name + '</a></div>');
+                    }
+                    $("#" + rm.result[0]._id).trigger("click");
+                } else {
+                    $('#tips').show();
+                }
+                }else {
+                sweetAlert('获取该用户项目失败!');
+            }
+        });
+    }
+
+    //添加用户的权限
+    function addAuth() {
+        var memberName = getMulUsers();
+        var memberAuth = $('#auth-select').val();
+        if(memberName.length == 0) {
+            sweetAlert('用户不能为空，请选择用户!');
+            return;
+        }
+        if(tempProAuth == 1) {
+            $.ajax({
+                type: "put",
+                url: "api/authority/changeAuthStatus",
+                data: {
+                    pid: tempPid,
+                    authStatus: 2
+                },
+                datatype: "json",
+                success: function (data) {
+                    if (data.code == 1) {
+                        $.ajax({
+                            type: 'POST',
+                            url: 'api/authority',
+                            data: {
+                                name: memberName,
+                                auth: memberAuth,
+                                pid : tempPid
+                            },
+                            success: function (rm) {
+                                if (rm.code === 1) {
+                                    sweetAlert({timer:2000,title: "添加成功"});
+                                    showAuth();
+                                    resetCancel();
+                                } else {
+                                    sweetAlert(rm.msg);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }else{
+            $.ajax({
+                type: 'POST',
+                url: 'api/authority',
+                data: {
+                    name: memberName,
+                    auth: memberAuth,
+                    pid : tempPid
+                },
+                success: function (rm) {
+                    if (rm.code === 1) {
+                        sweetAlert({timer:2000,title: "添加成功"});
+                        showAuth();
+                        resetCancel();
+                    } else {
+                        sweetAlert(rm.msg);
+                    }
+                }
+            });
+        }
+    }
+
+    function resetCancel() {
+        $('#muluser').empty();
+        $('#auth-select').val('1');
+        $('#auth-form').hide();
+        $('.changeIcon').removeClass('glyphicon-chevron-up');
+        $('.changeIcon').addClass('glyphicon-chevron-down');
+    }
+
+    var tempPid;            //用来保存用户选择的项目id
+    var tempProAuth;       //该项目的状态
+
+    //点击项目名后触发
+    function authManage(v) {
+        $('.sideproject').removeClass('active2');
+        $('#headName').text($(v).text());
+        $(v).addClass('active2');
+        $('.sideproject').css('color','black');
+        $('#rightContent').show();
+        tempPid = $(v).attr('id');
+        tempProAuth = $(v).data('auth');
+        showAuth();
+    }
+
+    var tempUserList;       //用来保存现在项目中存在的用户
+
+    //获取该项目的所有成员并渲染到页面
+    function showAuth() {
+        $.getJSON('api/authority',{pid:tempPid},function (rm) {
+            if (rm.code == 1) {
+                var data = rm.result;
+                tempUserList = data;
+                var template = $.templates("#theTmpl");
+                var htmlOutput = template.render(data);
+                $("#result").html(htmlOutput);
+                originHeight = $('.memberTable').height();
+            } else {
+                sweetAlert('获取项目成员信息失败！');
+            }
+        });
+    }
+
+    //新增成员的用户名下来菜单选中
+    function selectUser(v,e) {
+        if (mulChooseTag) {
+            e.cancelBubble = true;
+        } else {
+            $('#muluser').append('<li class="authnameli" data-name=' + $(v).text() + '><div class="bg-eee">' + $(v).text() + '<span class="glyphicon glyphicon-remove" onclick="delMulUser(this)"></span></div></li>');
+        }
+    }
+
+    function getMulUsers() {
+        var tempList = [];
+        var list = $('#muluser').children();
+        for(var i= 0;i<list.length;i++) {
+            tempList.push($(list[i]).data('name'));
+        }
+        return tempList;
+    }
+
+    function delMulUser(v) {
+        $(v).parent().parent().remove();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+#search_word {
+    height: 30px;
+    width:25%;
+    float: right;
+    margin-right: 10px;
+    font-size: 16px;
+    border: 1px solid #cac6c1;
+    transition: 0.5s all;
+    padding: 10px 30px 10px 10px;
+    -webkit-transition: all 0.5s;
+    -o-transition: all 0.5s;
+}
+
+#search_word:hover, #search_word:focus, #search_word:active {
+    width: 30%;
+    border-color: #5cb85c;
+    outline:none;
+}
+
+#search_btn {
+    position: absolute;
+    top: 24px;
+    right: 30px;
+    font-size: 16px;
+    color: #5b5b5b;
+}
+
+#search_btn:hover {
+    color: #5cb85c;
+}
+
+.btn-group button:focus{
+    background-color: #5cb85c;
+    color: white;
+}
+.btn-group button:hover{
+    background-color: #5cb85c;
+    color: white;
+}
+
+#addmonitor_surebtn{
+    background-color: #5cb85c;
+    color: white;
+}
+
+#table-tbody tr{
+    cursor:pointer
+}

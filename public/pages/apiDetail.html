@@ -1,0 +1,225 @@
+<div class="contentRightHead" id="VIEWAPI">
+    <h4 class="contentRightHeadTilte">
+        <span id="apiMethod"></span>&nbsp;
+        <span id="apiName" class="" style="" title=""></span>
+    </h4>
+    <p class="fontSmall">
+        <span>简介</span><span class="fontWeight">:</span>
+        <span class="fontSmall" id="apiDesc" style="height:13px;">API简介</span>
+    </p>
+</div>
+<div class="contentRightBody">
+    <div class="bodyEvery">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-cloud"></span>
+            <span>服务地址:</span>
+        </h4>
+        <span class="fontSmall" id="apiUrl"></span>
+    </div>
+    <div class="bodyEvery">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-th-list"></span>
+            <span>参数:</span>
+        </h4>
+
+        <div class="outPut">
+            <table class="table">
+                <thead>
+                <tr>
+                    <td>参数名</td>
+                    <td>类型</td>
+                    <td>是否必须</td>
+                    <td>释义</td>
+                </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-top:10px" id="testDiv">
+            <button class="btn btn-default testButton" onclick="showTestAPI()" name="testButton"><span class="glyphicon glyphicon-wrench"></span>&nbsp;测试
+            </button>
+        </div>
+        <h4 class="contentRightHeadTilte" id="viewTestHeadTilte" style="margin-top: 30px">
+            <span class="glyphicon glyphicon-wrench"></span>
+            <span>测试:</span>
+        </h4>
+        <div class="outPut" style="box-shadow: 5px 5px 5px #888;display: none;" id="testApiContent">
+            <div style="float: right;"><a href="javascript:void(0);" class="removeTestA" onclick="removeApiContent()"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+            <div class="row" style="padding:10px 0px 30px">
+                <div class="col-md-12">
+                    <input class="testUrl" style="width: 9%; border-style: none;" readonly id="testMethod">&nbsp;&nbsp;
+                    <input class="testUrl input-test" style="width: 88%;margin-left: -3px;" id="testUrl">
+                </div>
+            </div>
+            <div class="row" style="padding:10px 0px 30px" id="testContent">
+            </div>
+            <div class="row">
+                <div class="col-md-12"><button class="btn btn-default testButton" onclick="sendTestMsg()"><span class="glyphicon glyphicon-send"></span>发送请求</button></div>
+                <div class="col-md-12" style="padding-top: 15px;">
+                    <div style="padding:5px 10px;background:#eee;border-bottom:1px solid #eee;" >
+                        <p style="color: #333;margin: 0;">测试结果</p>
+                    </div>
+                    <textarea class="testTextarea" id="returnData" style="width: 100%;background: #eee;padding: 0 10px;border: 0;"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bodyEvery">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-log-out"></span>
+            <span>输出:</span>
+        </h4>
+
+        <div class="outPut">
+            <pre id="apiOutput" class="css text-info" name="htmlTest"></pre>
+        </div>
+    </div>
+    <div class="bodyEvery">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-globe"></span>
+            <span>示例:</span>
+        </h4>
+
+        <div class="switchDiv" style="padding-left: 0px;">
+            <a href="javascript:void(0)" class="green" onclick="checkSuccess(1)">
+                <span id="successColor" style="color:#5cb85c">成功</span></a>
+            <span>|</span>
+            <a href="javascript:void(0)" class="red" onclick="checkSuccess(2)"><span
+                    id="errorColor">错误</span></a>
+        </div>
+        <div class="outPut" id="successExample">
+            <pre id="apiSuccess" class="css text-info" name="cssTest"></pre>
+        </div>
+        <div class="outPut" id="failureExample" style="display:none">
+            <pre id="apiError" class="css text-info" name="jsTest"></pre>
+        </div>
+    </div>
+    <div class="bodyEvery" style="border:0">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-comment"></span>
+            <span>描述:</span>
+        </h4>
+
+        <div class="outPut">
+            <textarea id="apiDetail" class="addText css text-info"></textarea>
+        </div>
+    </div>
+</div>
+<script>
+    var niceApi = false;
+    $(document).ready(
+            function() {
+                niceApi = $(".addText").niceScroll({
+                    cursorcolor: "#cac6c1",
+                    cursorborder: "#cac6c1",
+                    cursorwidth: "4px"
+                })
+            }
+    );
+
+    var pId = $("#pIdSave").val();
+    var id = $("#rightContent").attr("rid");
+    $(function(){
+        $('#viewTestHeadTilte').hide();
+        $.ajax({
+            type: "get",
+            url: "/api/projects/" + pId + "/rest/" + id,
+            success: function (data) {
+                if (data.code == 1) {
+                    loadApiDetailModal(data.result);
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+
+        // 页面禁用输入
+        $('#returnData').attr("readonly", true);
+        $('#apiOutput').attr("readonly", true);
+        $('#apiSuccess').attr("readonly", true);
+        $('#apiError').attr("readonly", true);
+        $('#apiDetail').attr("readonly", true);
+    });
+
+    //初始化右侧详情展示
+    function loadApiDetailModal(result) {
+//        var r = result[0];
+        var r = result;
+        var restInfo = r.data;
+        var method = r.method.toUpperCase(r.method);//API方式转换为大写显示
+        $("#apiName").html(r.name);
+        $("#apiName").attr("title",r.name);
+        $("#apiDesc").html(r.description);
+        $("#apiMethod").html(method);
+        //格式化URL前缀显示
+        var urlFix = r.url;
+        var res1 = /</g;
+        urlFix = urlFix.replace(res1, "&lt;");
+        $("#apiUrl").html(urlFix);
+        //组装参数表格展示
+        var total = [];
+        for (var i = 0; i < restInfo.length; i++) {
+            var para = new Array();
+            if (restInfo[i].required == "true") {
+                var must = "是";
+            } else if (restInfo[i].required == "false") {
+                var must = "否";
+            }
+            para.push('<tr><td style="border-style: none;">' + restInfo[i].key + '</td><td style="border-style: none;">' + restInfo[i].type + '</td><td style="border-style: none;">' + must + '</td><td style="border-style: none;">' + restInfo[i].value + '</td>');
+            total.push(para.join(''));
+        }
+        $("#tableBody").empty().append(total);
+        $("#apiOutput").html(r.output);
+        $("#apiSuccess").html(r.outputsuccess);
+        $("#apiError").html(r.outputerror);
+        $("#apiDetail").html(r.detail);
+
+        var method = "";
+        switch (r.method){
+            case "get":
+                method = "GET";
+                break;
+            case "post":
+                method =　"POST";
+                break;
+            case "delete":
+                method = "DELETE";
+                break;
+            case "put":
+                method = "PUT";
+                break;
+            default :
+                break;
+        }
+
+        //设置输出样例显示样式
+//        DlHighlight.HELPERS.highlightByName('htmlTest', 'pre');
+//        DlHighlight.HELPERS.highlightByName('cssTest', 'pre');
+//        DlHighlight.HELPERS.highlightByName('jsTest', 'pre');
+
+        $("#testMethod").val(method);
+        $("#testUrl").val(r.url);
+        var total = [];
+        totalNum = r.data.length;
+        if (totalNum) {
+            for(var i=0;i<r.data.length;i++){
+                var para = new Array();
+                para.push('<div class="col-md-12 userCustom"><input style="width:9%; border-style: none;" readonly class="testPara" placeholder="参数" value="'+ r.data[i].key +'" id="key'+ i +'">&nbsp;&nbsp;<input style="width:88%" id="value'+i+'" class="testParaA input-test" placeholder="值"></div>')
+                total.push(para.join(''));
+            }
+            $("#testContent").empty().append(total);
+        }
+
+        // 添加对apidesc简介过长和api服务地址过长的处理
+        $("#apiName").addClass("apiView");
+        $("#apiDesc").addClass("apiView");
+        $("#apiUrl").addClass("apiView");
+
+    }
+
+</script>

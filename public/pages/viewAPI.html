@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/zTreeStyle.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="css/styleRestAPI.css">
+    <link rel="stylesheet" type="text/css" href="css/ztreeSelf.css">
+    <style>
+        .btn {
+            border-radius: 0;
+        }
+
+        .iconMethod {
+            color: #fff;
+            padding: 1px 3px;
+            font-weight: 500;
+            font-size: 11px;
+        }
+
+        .DlHighlight {
+            background-color: #eee;
+            border-color: #eee;
+            border-radius: 0px;
+            border-style: solid;
+            border-width: 1px 1px 1px 6px;
+            border: 0px;
+            color: #222;
+            font: 10pt Monaco, serif;
+            overflow: auto;
+            padding: 0px;
+            width: 100%;
+        }
+
+        .testPara {
+            border: 0;
+            border-bottom: 1px solid #cac6c1;
+            background: none;
+            padding: 5px 10px 5px 1px;
+
+            font-size: 1.3rem;
+            color: inherit;
+
+        }
+        .testParaA {
+            border: 0;
+            border-bottom: 1px solid #cac6c1;
+            background: none;
+            padding: 5px 10px 5px 1px;
+
+            font-size: 1.3rem;
+            color: inherit;
+        }
+
+        .testUrl {
+            border: 0;
+            border-bottom: 1px solid #cac6c1;
+            background: none;
+            padding: 5px 10px 5px 1px;
+            font-size: 1.4rem;
+            color: inherit;
+        }
+
+        .userCustom {
+            padding-bottom: 1.5rem;
+        }
+
+        .testTextarea{
+            background: #fff;
+            border:0.1rem solid #fff ;
+            width: 100%;
+            height: 180px;
+            border-top: none;
+            padding: 10px;
+        }
+
+        .removeTestA {
+            color: inherit;
+        }
+
+        .removeTestA:hover,.removeTestA:focus {
+            color: #5cb85c;
+        }
+
+        .APIname {
+            display: inline-block;
+            width: 170px;
+            height: 30px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .myclass {
+            display: inline-block;
+            height: 20px;
+            width: 100px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .apiView {
+            display: inline-block;
+            height: 18px;
+            width: 600px;
+            /*overflow: hidden;*/
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3" style="margin-top:20px;padding:0">
+            <div class="projectNameView">
+                <span class="glyphicon glyphicon-file"></span>&nbsp;<span class="projectOfView"></span>
+                <div class="moreFunction">
+                    <ul>
+                        <li id="moreFunc"><a href="javascript:void(0)"><span class="glyphicon glyphicon-th-list"></span></a>
+                            <ul style="display: none" id="More">
+                                <li><a href="javascript:void(0)" onclick="newGroups()">新增分组</a></li>
+                                <li><a href="javascript:void(0)" onclick="projectCheck()">项目切换</a></li>
+                                <li><a href="javascript:void(0)" onclick="monitorConfig()">导入API</a></li>
+                                <li><a href="javascript:void(0)" onclick="">导出API</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <input type="text" class="searchInput another" placeholder="请输入API名称，方式，或路径" id="treeSearch">
+            <a href="javascript:void(0)" class="searchA" onclick="search_ztree('treeDemo', 'treeSearch')">
+                <span class="glyphicon glyphicon-search"></span>
+            </a>
+
+            <div style="clear:both;margin-left:15px;overflow:hidden">
+                <ul id="treeDemo" class="ztree"></ul>
+            </div>
+        </div>
+        <div class="col-md-9" style="margin:20px 0;border-left:1px solid #cac6c1;">
+            <div class="contentRight" id="rightContent">
+                <div class="contentRightHead" id="VIEWAPI">
+                    <h4 class="contentRightHeadTilte">
+                        <span id="apiMethod"></span>&nbsp;
+                        <span id="apiName"></span>
+                    </h4>
+                    <p class="fontSmall"><span>简介</span><span class="fontWeight">&nbsp;:&nbsp;</span>
+                        <span class="fontSmall" id="apiDesc">API简介</span></p>
+                </div>
+                <div class="contentRightBody">
+                    <div class="bodyEvery">
+                        <h4 class="contentRightHeadTilte">
+                            <span class="glyphicon glyphicon-cloud"></span>
+                            <span>服务地址:</span>
+                        </h4>
+                        <span class="fontSmall" id="apiUrl"></span>
+                    </div>
+                    <div class="bodyEvery">
+                        <h4 class="contentRightHeadTilte">
+                            <span class="glyphicon glyphicon-th-list"></span>
+                            <span>参数:</span>
+                        </h4>
+
+                        <div class="outPut">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <td>参数名</td>
+                                    <td>类型</td>
+                                    <td>是否必须</td>
+                                    <td>释义</td>
+                                </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top:10px">
+                            <a class="testButton" onclick="showTestAPI()" name="testButton" href="#"><span class="glyphicon glyphicon-wrench"></span>&nbsp;测试
+                            </a>
+                        </div>
+                        <h4 class="contentRightHeadTilte" id="viewTestHeadTilte" style="margin-top: 30px">
+                            <span class="glyphicon glyphicon-wrench"></span>
+                            <span>测试:</span>
+                        </h4>
+                        <div class="outPut" style="box-shadow: 5px 5px 5px #888;display: none;" id="testApiContent">
+                            <div style="float: right;"><a href="javascript:void(0);" class="removeTestA" onclick="removeApiContent()"><span class="glyphicon glyphicon-remove"></span></a>
+                            </div>
+                            <div class="row" style="padding:10px 0px 30px">
+                                <div class="col-md-12">
+                                    <input class="testUrl" style="width: 9%; border-style: none;" readonly id="testMethod">
+                                    <input class="testUrl" style="width: 90%" id="testUrl">
+                                </div>
+                            </div>
+                            <div class="row" id="testContent">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12"><button class="btn btn-default testButton" onclick="sendTestMsg()"><span class="glyphicon glyphicon-send"></span>发送请求</button></div>
+                                <div class="col-md-12" style="padding-top: 15px;">
+                                    <div style="padding:5px 10px;background:#fff;border-bottom:1px solid #eee;" >
+                                        <p style="color: #333;margin: 0;">测试结果</p>
+                                    </div>
+                                    <textarea class="testTextarea" id="returnData"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bodyEvery">
+                        <h4 class="contentRightHeadTilte">
+                            <span class="glyphicon glyphicon-log-out"></span>
+                            <span>输出:</span>
+                        </h4>
+                        <div class="outPut">
+                            <pre id="apiOutput" class="css addText" name="htmlTest"></pre>
+                        </div>
+                    </div>
+                    <div class="bodyEvery">
+                        <h4 class="contentRightHeadTilte">
+                            <span class="glyphicon glyphicon-globe"></span>
+                            <span>示例:</span>
+                        </h4>
+
+                        <div class="switchDiv">
+                            <a href="javascript:void(0)" class="green" onclick="checkSuccess(1)">
+                                <span id="successColor" style="color:#5cb85c">成功</span></a>
+                            <span>|</span>
+                            <a href="javascript:void(0)" class="red" onclick="checkSuccess(2)"><span
+                                    id="errorColor">错误</span></a>
+                        </div>
+
+                        <div class="outPut" id="successExample" >
+                            <textarea id="apiSuccess" class="css addText" name="cssTest"></textarea>
+                        </div>
+
+                        <div class="outPut" id="failureExample" style="display:none">
+                            <pre id="apiError" class="css addText" name="jsTest"></pre>
+                        </div>
+
+                    </div>
+                    <div class="bodyEvery" style="border:0">
+                        <h4 class="contentRightHeadTilte">
+                            <span class="glyphicon glyphicon-comment"></span>
+                            <span>描述:</span>
+                        </h4>
+
+                        <div class="outPut">
+                            <span id="apiDetail"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="editGroup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog" style="top:20%">
+        <div class="modal-content" style="background:#eee;border-radius:0px;width:100%">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title" id="myModalLabel" style="text-align:center">更改项目分组</h3>
+            </div>
+            <div class="modal-body" style="padding:30px 0px;font-size:16px">
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-3" style="text-align:center;padding:8px">
+                        <span>项目分组名</span>
+                        <span style="font-weight:600">:</span>
+                    </div>
+                    <div class="col-md-9">
+                        <input class="hide" id="groupsId">
+                        <input class="addProjectInput" style="width:100%" placeholder="项目分组名称" id="groupsName">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align:center">
+                <a href="javascript:void(0)" class="btn btn-success" style="border-radius:0px" onclick="savaGroup()"><span class="glyphicon glyphicon-floppy-disk"></span>保存</a>
+                <a href="javascript:void(0)" class="btn btn-primary" style="border-radius:0px" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增分组-->
+<div class="modal fade" id="newGroup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog" style="top:20%">
+        <div class="modal-content" style="background:#eee;border-radius:0px;width:100%">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title" id="myModalLabel" style="text-align:center">新增项目分组</h3>
+            </div>
+            <div class="modal-body" style="padding:30px 0px;font-size:16px">
+                <div class="row" style="padding:10px 30px">
+                    <div class="col-md-3" style="text-align:center;padding:8px">
+                        <span>项目分组名</span>
+                        <span style="font-weight:600">:</span>
+                    </div>
+                    <div class="col-md-9">
+                        <input class="addProjectInput" style="width:100%" placeholder="项目分组名称" id="addGroupsName">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align:center">
+                <a href="javascript:void(0)" class="btn btn-success" style="border-radius:0px" onclick="addGroup()"><span class="glyphicon glyphicon-floppy-disk"></span>保存</a>
+                <a href="javascript:void(0)" class="btn btn-primary" style="border-radius:0px" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    //发布api展示界面
+    function releaseApi () {
+        $("#rightContent").load("pages/releaseAPI.html");
+    }
+
+    var testNiceScroll =false;
+    function testNiceInit (){
+        testNiceScroll = $('#returnData').niceScroll({
+            cursorcolor: "#cac6c1",
+            cursorborder: "#cac6c1",
+            cursorwidth: "4px"
+        });
+    }
+
+    var viewApi = false;
+    $(document).ready(
+            function() {
+                viewApi = $("#returnData").niceScroll({
+                    cursorcolor: "#cac6c1",
+                    cursorborder: "#cac6c1",
+                    cursorwidth: "4px"
+                })
+            }
+    );
+
+    var pId = $("#pIdSave").val();
+    $(function () {
+        //加载项目信息
+        loadMsg();
+        $("#rightContent").css({"min-height": $(window).height() - 280 + "px"});
+        //导航栏扩展
+        $("#moreFunc").hover(function () {
+            $("#More").stop().slideDown(200);
+        }, function () {
+            $("#More").stop().slideUp(200);
+        });
+        if(tempUserAuth == 1 || tempUserAuth == -1){
+            $('.moreFunction').hide();
+            $("#manage-li").hide();
+        }
+    });
+
+    //树相关配置
+    var setting = {
+        view: {
+            showLine: false,
+            showIcon: false,
+            nameIsHTML: true,
+            addHoverDom: addHoverDom,
+            removeHoverDom: removeHoverDom,
+            fontCss: setFontCss_ztree
+        },
+        edit: {
+            drag: {
+                isCopy: false,
+                isMove: true,
+                prev: false,
+                next: false,
+                inner: true
+            },
+            enable: true,
+            showRemoveBtn: false,
+            showRenameBtn: false
+        },
+        callback: {
+            onClick: zTreeOnClick,
+            beforeDrag: beforeDrag,
+            beforeDrop: beforeDrop,
+            onDrop: zTreeOnDrop
+        }
+    };
+
+    //添加鼠标移到树节点的按钮
+    function addHoverDom(treeId, treeNode) {
+        if(tempUserAuth != 1 && tempUserAuth != -1) {
+            var aObj = $("#" + treeNode.tId + "_a");
+            if ($("#diyBtn_" + treeNode.id).length > 0) return;
+            if (!isNaN(treeNode.id)) {
+                var editStr = "<a class='delBut' id='diyBtn_" + treeNode.id + "_add'><span class='glyphicon glyphicon-plus'></span></a>"
+                        + "<a class='delBut' id='diyBtn_" + treeNode.id + "_edit'><span class='glyphicon glyphicon-pencil'></span></a>"
+                        + "<a class='delBut' id='diyBtn_" + treeNode.id + "'><span class='glyphicon glyphicon-trash'></span></a>";
+            } else {
+                var editStr = "<a class='delBut' id='diyBtn_" + treeNode.id + "_edit'><span class='glyphicon glyphicon-pencil'></span></a>"
+                        + "<a class='delBut' id='diyBtn_" + treeNode.id + "'><span class='glyphicon glyphicon-trash'></span></a>";
+            }
+            aObj.append(editStr);
+            var btn = $("#diyBtn_" + treeNode.id);
+            var editB = $("#diyBtn_" + treeNode.id + "_edit");
+            var addB = $("#diyBtn_" + treeNode.id + "_add");
+            if (addB) addB.bind("click", function () {
+                newAPI(treeNode.id);
+            });
+            if (!isNaN(treeNode.id)) {
+                if (btn) btn.bind("click", function () {
+                    var id = treeNode.id;
+                    swal({
+                        title: "确定要删除该分组吗?",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        closeOnConfirm: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            $.ajax({
+                                type: "delete",
+                                url: "api/projects/" + pId + "/groups/" + id,
+                                success: function (data) {
+                                    if (data.code == "1") {
+                                        swal({
+                                            title: "删除成功!",
+                                            confirmButtonText: "确定"
+                                        });
+                                        loadMsg();
+                                    } else {
+                                        swal({
+                                            title: data.msg,
+                                            confirmButtonText: "确定"
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
+                        }
+                    });
+                });
+                if (editB) editB.bind("click", function () {
+                    $("#editGroup").modal("show");
+                    $("#groupsId").val(treeNode.id);
+                    $("#groupsName").val(treeNode.name);
+                });
+            } else {
+                if (btn) btn.bind("click", function () {
+                    var id = treeNode.id;
+                    swal({
+                        title: "确定要删除该API吗?",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        closeOnConfirm: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            $.ajax({
+                                type: "delete",
+                                url: "api/projects/" + pId + "/rest/" + id,
+                                success: function (data) {
+                                    if (data.code == "1") {
+                                        swal({
+                                            title: "删除成功!",
+                                            confirmButtonText: "确定"
+                                        });
+                                        loadMsg();
+                                    } else {
+                                        swal({
+                                            title: "未能成功删除!",
+                                            confirmButtonText: "确定"
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
+                        }
+                    });
+                });
+                if (editB) editB.bind("click", function (e) {
+                    editAPI(treeNode.id);
+                    e.stopPropagation();//阻止事件冒泡
+                });
+            }
+        }
+    }
+
+    //鼠标移开节点按钮移除
+    function removeHoverDom(treeId, treeNode) {
+        $("#diyBtn_" + treeNode.id).unbind().remove();
+        $("#diyBtn_" + treeNode.id + "_edit").unbind().remove();
+        $("#diyBtn_" + treeNode.id + "_add").unbind().remove();
+    }
+
+    //树节点点击展开事件
+    function zTreeOnClick(event, treeId, treeNode) {
+        if (!isNaN(treeNode.id)) {
+            return;
+        } else {
+            showAPIdetail(treeNode.id);
+        }
+    }
+
+    //拖动节点前属性判断
+    function beforeDrag(treeId, treeNodes) {
+        for (var i = 0, l = treeNodes.length; i < l; i++) {
+            if (treeNodes[i].drag === false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //拖动节点前属性判断
+    function beforeDrop(treeId, treeNodes, targetNode, moveType) {
+        return targetNode ? targetNode.drop !== false : true;
+    }
+
+    //节点拖动更改分组
+    function zTreeOnDrop(event, treeId, treeNodes, targetNode, moveType) {
+        var rId = treeNodes[0].id;
+        var GId = targetNode.id;
+        $.ajax({
+            type: "put",
+            url: "api/projects/" + pId + "/rest/" + rId + "/group",
+            data: {
+                gid: GId
+            },
+            success: function (data) {
+                if (data.code != 1) {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+    }
+
+    //清空右侧
+    function clearRightMsg() {
+        $("tbody tr").remove();
+        $("#apiDesc").html("");
+        $("#apiUrl").html("");
+        $("#apiOutput").html("");
+        $("#apiSuccess").val("");
+        $("#apiError").val("");
+        $("#apiMethod").html("");
+        $("#apiName").html("");
+        $("#apiDetail").html("");
+        $("#saveButton").hide();
+        $('#testDiv>button').hide();
+    }
+
+    // 判断是否还存在子节点
+    var childNode = false;  // 该变量用来标识是否有子节点
+    function checkNode(re) {
+        for (var i = 0; i < re.length; i++) {
+            if (re[i].requests == '') {
+                continue;
+            }
+            if (re[i].requests[0].id != '') {
+                childNode = true;
+                break;
+            }
+            childNode = false;
+        }
+        if (!childNode) {
+            clearRightMsg();
+        }
+        childNode = false;
+    }
+
+    //初始化页面数据
+    function loadMsg() {
+        $.ajax({
+            type: "get",
+            url: "/api/projects/" + pId + "/rest",
+            success: function (data) {
+                if (data.code == 1) {
+                    installMsg(data.result);
+                    loadFirstId(data.result.groups);
+                    checkNode(data.result.groups);
+                    $("#document").attr("urlprefix", data.result.urlprefix);
+
+                    //logo改为项目名
+                    $("#window-logo").detach();
+                    $("#logo-parent").append("<a href='javascript:void(0)' id='window-logo'>"
+                            + "<span class='logoSpan logo-first-cha'>"
+                            + "B"
+                            + "</span>"
+                            + "<span class='logoSpan'>&nbsp;"
+                            + "udRest |"
+                            + "<span class='logoSpan-sm' id='window-lftup-name'>&nbsp;"
+                            + data.result.name
+                            + "</span>"
+                            + "</a>");
+                    $("#pname-save").val(data.result.name);
+                    $("#virtual-url-save").val(data.result.virtualUrl);
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+    }
+    
+    //获取树的第一个节点ID
+    function loadFirstId(re) {
+        for (var i = 0; i < re.length; i++) {
+            if (re[i].requests == '') {
+                continue;
+            }
+            if (re[i].requests[0].id != '') {
+                showAPIdetail(re[i].requests[0].id);//获取第一个展示节点的ID
+                break;
+            }
+        }
+    }
+
+    //初始化左侧树
+    function installMsg(re) {
+        var sa = re.groups;
+        $(".projectOfView").html(re.name);
+        //数据组装
+        var total = [];
+        var group = {};
+        for (var i = 0; i < sa.length; i++) {
+            if (sa[i].id == 0) {
+                continue;
+            } else {
+                group = {};
+                group.id = sa[i].id;
+                group.name = sa[i].name;
+                group.drag = false;
+                var Children = [];
+                var rest = {};
+                for (var j = 0; j < sa[i].requests.length; j++) {
+                    rest = {};
+                    rest.id = sa[i].requests[j].id;
+                    rest.drop = false;
+                    if (sa[i].requests[j].method == "get") {
+                        var style = "background:#5cb85c;";
+                    } else if (sa[i].requests[j].method == "post") {
+                        var style = "background:#337ab7;";
+                    } else if (sa[i].requests[j].method == "put") {
+                        var style = "background:#f0ad4e;";
+                    } else if (sa[i].requests[j].method == "delete") {
+                        var style = "background:#d9534f;";
+                    }
+                    var method = sa[i].requests[j].method.toUpperCase(sa[i].requests[j].method);
+                    rest.name = '<span style="' + style + '" class="iconMethod">' + method + '</span>&nbsp;<span title="' + sa[i].requests[j].name + '" class="myclass">' + sa[i].requests[j].name + '</span><span class="hide">'+sa[i].requests[j].url+'</span>';
+                    Children.push(rest);
+                }
+                group.children = Children;
+            }
+            total.push(group);
+        }
+        $.fn.zTree.init($("#treeDemo"), setting, total);
+
+        var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+        treeObj.expandAll(true);//展开全部节点
+        $(".level1").attr("onmouseover","this.title=''");
+
+        // 设置树节点的样式
+      $("#treeDemo").find("span").not(".iconMethod").not(".myclass").addClass("APIname");
+        return total;
+    }
+
+    //加载右侧详情
+    function showAPIdetail(id) {
+        $("#rightContent").load("pages/APIview.html");
+        $("#rightContent").attr("rid",id);
+    }
+
+
+    //项目分组信息修改
+    function savaGroup() {
+        if ($("#groupsName").val() == '') {
+            swal({
+                title: "项目分组名称不能为空!",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        var name = $("#groupsName").val();
+        var id = $("#groupsId").val();
+        $.ajax({
+            type: "put",
+            url: "api/projects/" + pId + "/groups/" + id,
+            data: {
+                name: name
+            },
+            success: function (data) {
+                if (data.code == 1) {
+                    swal({
+                        title: "修改成功!",
+                        confirmButtonText: "确定"
+                    });
+                    $("#editGroup").modal("hide");
+                    loadMsg();
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+    }
+
+    //新增分组
+    function newGroups() {
+        $("#newGroup").modal("show");
+        $("#addGroupsName").val('');
+    }
+
+    //保存新增分组
+    function addGroup() {
+        if ($("#addGroupsName").val() == '') {
+            swal({
+                title: "分组名称不能为空!",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        var Name = $("#addGroupsName").val();
+        $.ajax({
+            type: "post",
+            url: "api/projects/" + pId + "/groups",
+            data: {
+                name: Name
+            },
+            success: function (data) {
+                if (data.code == 1) {
+                    swal({
+                        title: "新增成功!",
+                        confirmButtonText: "确定"
+                    });
+                    $("#newGroup").modal("hide");
+                    loadMsg();
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        })
+    }
+
+    //新增API页面加载
+    function newAPI(id) {
+        $("#document").attr("gtrans", id);
+        $("#rightContent").empty().load("pages/newAPI.html");
+    }
+
+    //编辑API页面加载
+    function editAPI(id) {
+        $("#document").attr("atrans", id);
+        $("#rightContent").empty().load("pages/editAPI.html");
+    }
+
+    //测试窗口弹出
+    function showTestAPI() {
+        $('#viewTestHeadTilte').show();
+        $("[name='testButton']").hide(0,function(){$("#testApiContent").slideDown("fast");});
+        if(viewApi) {
+            viewApi.hide();
+        }
+        if(niceApi) {
+            niceApi.hide();
+        }
+        $("html,body").animate({scrollTop: $("#testApiContent").offset().top - 120}, "fast" , function() {
+            if(viewApi) {
+                viewApi.resize();
+                viewApi.show();
+            }
+            if(niceApi) {
+                niceApi.resize();
+                niceApi.show();
+            }
+        });
+        $("#returnData").val('');
+    }
+
+    //测试窗口关闭
+    function removeApiContent() {
+        if(testNiceScroll) {
+            testNiceScroll.hide();
+        }
+        if(viewApi) {
+            $("#testApiContent").slideUp(300,function(){
+                $("[name='testButton']").show();
+                viewApi.resize();
+                if(niceApi) {
+                    niceApi.resize();
+                }
+            });
+        } else {
+            $("#testApiContent").slideUp(300,function(){
+                $("[name='testButton']").show();
+                if(niceApi) {
+                    niceApi.resize();
+                }
+            });
+        }
+
+
+    }
+
+    //测试请求
+    function sendTestMsg() {
+        var testUrl = $("#testUrl").val();
+        var testMethod = $("#testMethod").val();
+        var testData = {};
+
+        for (var i = 0;i<totalNum;i++){
+            var key = $("#key"+ i).val();
+            var value = $("#value"+ i).val();
+            testData[key] = value;
+        }
+
+        $.ajax({
+            type: "get",
+            url: "api/apitest",
+            data: {
+                testurl: testUrl,
+                testmethod: testMethod,
+                testdata : testData
+            },
+            success :function(data){
+                $("#returnData").val('');
+                if(data.result){
+                    var last = jsl.format.formatJson(JSON.stringify(data.result));
+                    $("#returnData").val(last);
+                    if (testNiceScroll) {
+                        testNiceScroll.show();
+                    }
+                    testNiceInit();
+                }else{
+                    var str = '';
+                    if(data.msg.status != null){
+                        str = 'server status:' + data.msg.status;
+                    }else {
+                        str = JSON.stringify(data.msg);
+                    }
+                    swal({
+                        title: '访问远程服务器错误',
+                        text: str,
+                        confirmButtonText: "确定"
+                    });
+                }
+
+
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,439 @@
+<style>
+    .tdSelect {
+        font-size: 13px;
+        background: none;
+        border-bottom: 1px solid #cac6c1;
+        width: 100%;
+    }
+
+    .typeSelect {
+        width: 100px;
+        background: none;
+        border: none;
+        font-size: 18px;
+    }
+</style>
+<div class="contentRightHead" id="NEWAPI">
+    <h4 class="contentRightHeadTilte" style="border-bottom: 1px solid #cac6c1;margin-bottom: 30px">
+        <select class="selectpicker" id="apiMethod">
+            <option value="get">GET</option>
+            <option value="post">POST</option>
+            <option value="put">PUT</option>
+            <option value="delete">DELETE</option>
+        </select>
+        <input placeholder="API名称" class="addApiName" id="apiName">
+    </h4>
+    <h4 class="contentRightHeadTilte">
+        <span class="glyphicon glyphicon-pencil"></span>
+        <span>简介:</span>
+    </h4>
+    <input class="addInput" id="apiDesc" style="width: 100%">
+</div>
+<div class="contentRightBody">
+    <div class="bodyEvery">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-cloud"></span>
+            <span>服务地址:</span>
+        </h4>
+        <div style="width:100%">
+            <input value="http://192.168.1.1:3000" class="ipfuix" disabled="true" style="float:left;">
+            <input id="apiUrlsuffix" class="addInput"  style="width: 0px;">
+            <div class="clear"></div>
+        </div>
+    </div>
+    <div class="bodyEvery">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-th-list"></span>
+            <span>参数:</span>
+        </h4>
+
+        <div class="outPut">
+            <table class="tableOwn">
+                <thead>
+                <tr>
+                    <td style="width: 15%;text-align: left;padding-left: 9px">参数名</td>
+                    <td style="width: 15%;text-align: left;padding-left: 18px">类型</td>
+                    <td style="width: 15%;text-align: left;padding-left: 18px">是否必须</td>
+                    <td style="width: 45%">释义</td>
+                    <td style="width: 10%"><a href="javascript:void(0)" onclick="addPrameter()"><span
+                            class="glyphicon glyphicon-plus"></span></a></td>
+                </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top:10px">
+             <button class="btn btn-default testButton" onclick="showAddTestAPI()" name="addTestButton"><span class="glyphicon glyphicon-wrench"></span>&nbsp;测试</button>
+        </div>
+        <h4 class="contentRightHeadTilte" id="contentAddTestHeadTilte" style="margin-top: 30px">
+            <span class="glyphicon glyphicon-wrench"></span>
+            <span>测试:</span>
+        </h4>
+        <div class="outPut" style="box-shadow: 5px 5px 5px #888;display: none;" id="testAddApiContent">
+            <div style="float: right;"><a href="javascript:void(0);" class="removeTestA" onclick="removeAddApiContent()"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+            <div class="row" style="padding:10px 0px 30px">
+                <div class="col-md-12">
+                    <input class="testUrl" style="width: 9%; border-style: none;" readonly id="testAddMethod">
+                    <input class="testUrl" style="width: 90%" id="testAddUrl">
+                </div>
+            </div>
+            <table class="tableOwn" id="tableTestOwn">
+                <thead>
+                <tr>
+                    <td style="width: 25%;text-align: left;">参数名</td>
+                    <td style="width: 65%;text-align: left;">参数值</td>
+                    <td style="width: 10%">
+                        <a href="javascript:void(0)" onclick="addAddPrameter()"><span class="glyphicon glyphicon-plus"></span></a>
+                    </td>
+                </tr>
+                </thead>
+                <tbody id="testAddContent"></tbody>
+            </table>
+            <div class="row">
+                <div class="col-md-12"><button class="btn btn-default testButton" onclick="sendAddTestMsg()"><span class="glyphicon glyphicon-send"></span>发送请求</button></div>
+                <div class="col-md-12" style="padding-top: 15px;">
+                    <div style="padding:5px 10px;background:#fff;border-bottom:1px solid #eee;" >
+                        <p style="color: #333;margin: 0;">测试结果</p>
+                    </div>
+                    <textarea class="testTextarea" id="returnAddData" readonly="readonly"></textarea>
+                </div>
+                <div class="col-md-12" id="testAddResultDo" style="padding-top: 10px">
+                    <a class="formatOut" style="margin-right: 4px;text-align: left;float: left" onclick="send2Sample(1)" href="javascript:void(0)"><span>导入输出</span></a>
+                    <a class="formatOut" style="margin-right: 4px;text-align: left;float: left" onclick="send2Sample(2)" href="javascript:void(0)"><span>导入成功</span></a>
+                    <a class="formatOut" style="margin-right: 4px;text-align: left;float: left" onclick="send2Sample(3)" href="javascript:void(0)"><span>导入错误</span></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="bodyEvery">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-log-out"></span>
+            <span>输出:</span>
+            <a href="javascript:void(0)" onclick="formatJson(1)" class="formatOut"><span>格式化</span></a>
+        </h4>
+
+        <div class="outPut">
+            <textarea class="addText" id="outputSample"></textarea>
+        </div>
+    </div>
+    <div class="bodyEvery">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-globe"></span>
+            <span>示例:</span>
+            <a href="javascript:void(0)" onclick="formatJson(2)" class="formatOut"
+               style="margin-top: 20px"><span>格式化</span></a>
+        </h4>
+
+        <div class="switchDiv">
+            <a href="javascript:void(0)" class="green" onclick="checkSuccess(1)">
+                <span id="successColor" style="color:#5cb85c">成功</span></a>
+            <span>|</span>
+            <a href="javascript:void(0)" class="red" onclick="checkSuccess(2)"><span
+                    id="errorColor">错误</span></a>
+        </div>
+        <div class="outPut" id="successExample">
+            <textarea id="trueSample" class="addText"></textarea>
+        </div>
+        <div class="outPut" id="failureExample" style="display:none">
+            <textarea id="falseSample" class="addText"></textarea>
+        </div>
+    </div>
+    <div class="bodyEvery" style="border:0">
+        <h4 class="contentRightHeadTilte">
+            <span class="glyphicon glyphicon-comment"></span>
+            <span>描述:</span>
+        </h4>
+
+        <div class="outPut">
+            <textarea class="addText" style="height: 60px" id="apiDetail"></textarea>
+        </div>
+    </div>
+    <div class="bodyEvery" style="border:0;text-align: center">
+        <a class="btn btn-success" href="javascript:void(0)" onclick="saveApi()"><span class="glyphicon glyphicon-floppy-disk"></span>保存</a>
+        <a class="btn btn-primary" href="javascript:void(0)" onclick="addReturnMain()"><span class="glyphicon glyphicon-remove"></span>取消</a>
+    </div>
+</div>
+<script>
+    var currentNum = '-1';
+    $(function () {
+        // 隐藏测试标题及其图标
+        $("#contentAddTestHeadTilte").hide();
+
+        $(".ipfuix").val($("#document").attr("urlprefix"));
+        var fontSize = $(".ipfuix").css("font-size").split("px")[0];
+        $(".ipfuix").css("width",($("#document").attr("urlprefix").length+2) * Math.ceil(fontSize/2) + 'px');
+        $("#apiUrlsuffix").css("width",$("#apiUrlsuffix").parent("div").width()- $("#apiUrlsuffix").prev().width()-11.5 + "px");
+        $(".selectpicker").selectpicker({
+            style: 'typeSelect'
+        });
+        $("select[name=selectPicker]").selectpicker({
+            style: 'tdSelect',
+            width: '100%'
+        });
+        $(".addText").niceScroll({
+            cursorcolor: "#cac6c1",
+            cursorborder: "#cac6c1",
+            cursorwidth: "4px"
+        });
+    });
+
+    //增加参数
+    function addPrameter() {
+        currentNum++;
+        var parameter = "";
+        parameter += '<tr id="para' + currentNum + '"><td><input class="paraTd" id="paraName' + currentNum + '"></td>'
+                + '<td><select name="selectPicker" id="paraType' + currentNum + '"><option value="int">int</option>'
+                + '<option value="string">string</option><option value="double">double</option></select></td>'
+                + '<td><select name="selectPicker" id="paraMust' + currentNum + '"><option value="true">是</option>'
+                + '<option value="false">否</option></select></td>'
+                + '<td><input class="paraDTd" id="paraDesc' + currentNum + '"></td>'
+                + '<td><a href="javascript:void(0)" onclick="delePara(' + currentNum + ')"><span class="glyphicon glyphicon-trash"></span></a></td></tr>';
+        $("#tableBody").append(parameter);
+        $("select[name=selectPicker]").selectpicker({
+            style: 'tdSelect',
+            width: '100%'
+        });
+    }
+
+    //删除参数
+    function delePara(id) {
+        $("#para" + id).remove();
+    }
+
+    //新增API
+    function saveApi() {
+        if ($("#apiName").val() == "") {
+            swal({
+                title: "API名称不能为空!",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        if ($("#apiUrlsuffix").val() == "") {
+            swal({
+                title: "API后缀不能为空!",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        if ($("#apiMethod").val() == "") {
+            swal({
+                title: "API方式不能为空!",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        if ($("#outputSample").val() == "") {
+            swal({
+                title: "输出描述不能为空!",
+                confirmButtonText: "确定"
+            });
+            return;
+        }
+        //组装数据
+        var PId = $("#pIdSave").val();
+        var Groupid = $("#document").attr("gtrans");
+        var Name = $("#apiName").val();
+        var Description = $("#apiDesc").val();
+        var Urlsuffix = $("#apiUrlsuffix").val();
+        var Method = $("#apiMethod").val();
+
+        //组装参数数据json字符串格式
+        var total = [];
+        for (var i = 0; i <= currentNum; i++) {
+            var r = new Array();
+            var Key = $("#paraName" + i + "").val();
+            var Value = $("#paraDesc" + i + "").val();
+            var Type = $("#paraType" + i + "").val();
+            var Required = $("#paraMust" + i + "").val();
+            var strValue = JSON.stringify(Value);
+            if (Key != '' && Key != undefined) {
+                r.push('{"key":"' + Key + '","value":' + strValue + ',"type":"' + Type + '","required":"' + Required + '"}');
+                total.push(r.join(''));
+            } else {
+                continue;
+            }
+        }
+        ;
+        var rm = [];
+        rm.push('[' + total + ']');
+        var Data = rm;
+        var Output = $("#outputSample").val();
+        var OutputSuccess = $("#trueSample").val();
+        var OutputError = $("#falseSample").val();
+        var Detail = $("#apiDetail").val();
+
+        $.ajax({
+            type: "post",
+            url: "api/projects/" + PId + "/rest",
+            data: {
+                groupid: Groupid,
+                name: Name,
+                description: Description,
+                urlsuffix: Urlsuffix,
+                method: Method,
+                data: Data,
+                output: Output,
+                outputsuccess: OutputSuccess,
+                outputerror: OutputError,
+                detail: Detail
+            },
+            success: function (data) {
+                if (data.code == 1) {
+                    swal({
+                        title: "新增成功!",
+                        confirmButtonText: "确定"
+                    });
+                    $("#rightContent").empty().load("pages/APIview.html");
+                    showAPIdetail(data.result.rid);
+                    loadLeftMsg();
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if(XMLHttpRequest.status == 413) { // 请求实体太大。
+                    swal({
+                        title: "您输入内容太大,请重新输入!",
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+    }
+
+    //初始化页面数据
+    function loadLeftMsg() {
+        $.ajax({
+            type: "get",
+            url: "/api/projects/" + pId + "/rest",
+            success: function (data) {
+                if (data.code == 1) {
+                    installMsg(data.result);
+                } else {
+                    swal({
+                        title: data.msg,
+                        confirmButtonText: "确定"
+                    });
+                }
+            }
+        });
+    }
+
+    //取消修改
+    function addReturnMain() {
+        loadPage(111);
+    }
+
+    var addNum = -1;
+
+    // 测试时增加参数
+    function addAddPrameter() {
+        addNum++;
+        var parameter = "";
+        parameter += '<tr id="para' + addNum + '">'
+                + '<td><input style="width: 100%;" class="testPara" placeholder="参数名" id="paraTestName' + addNum + '"></td>'
+                + '<td><input style="width: 100%;" class="testPara" placeholder="值" id="paraTestValue' + addNum + '"></td>'
+                + '<td><a href="javascript:void(0)" style="width: 15%;" onclick="removeAddPara(' + addNum + ')">'
+                + '<span class="glyphicon glyphicon-trash"></span></a></td></tr>';
+        $("#testAddContent").append(parameter);
+    }
+
+    // 测试时删除参数
+    function removeAddPara(id) {
+        $("#para" + id).remove();
+    }
+
+
+    //测试窗口弹出
+    function showAddTestAPI() {
+        // 测试图标显示
+        $("#contentAddTestHeadTilte").show();
+        // 导进按钮隐藏
+        $('#testAddResultDo').hide();
+
+        $("[name='addTestButton']").hide(0, function () {$("#testAddApiContent").slideDown(10);});
+        $("html,body").animate({scrollTop: $("#testAddApiContent").offset().top - 120}, 10);
+
+        // 初始化测试信息的方法和URL
+        var testEditMethod = $('#apiMethod').val();
+        var apiUrlsuffix = $('#apiUrlsuffix').val();
+        var testEditUrl = $('#document').attr('urlprefix') + apiUrlsuffix;
+        $("#testAddMethod").val(testEditMethod.toUpperCase(testEditMethod));
+        $("#testAddUrl").val(testEditUrl);
+        checkPrameter();
+
+        $("#returnAddData").val('');
+    }
+
+    //测试窗口关闭
+    function removeAddApiContent() {
+        $("#testAddApiContent").slideUp(300,function(){$("[name='addTestButton']").show();});
+        // 测试图标隐藏
+        $("#contentAddTestHeadTilte").hide();
+    }
+
+    //测试请求
+    function sendAddTestMsg() {
+        var testUrl = $("#testAddUrl").val();
+        var testMethod = $("#testAddMethod").val();
+        var testData = {};
+
+        //testData拼接
+        var testAddCount = 0;
+        while($("#paraTestName"+testAddCount).val() != undefined){
+            var key = $("#paraTestName"+testAddCount).val();
+            var value = $("#paraTestValue"+testAddCount).val();
+            testData[key] = value;
+            testAddCount ++;
+        }
+
+        $.ajax({
+            type: "get",
+            url: "api/apitest",
+            data: {
+                testurl: testUrl,
+                testmethod: testMethod,
+                testdata : testData
+            },
+            success :function(data){
+                var last=jsl.format.formatJson(JSON.stringify(data.result));
+                $("#returnAddData").val(last);
+                $("#returnAddData").niceScroll({
+                    cursorcolor: "#cac6c1",
+                    cursorborder: "#cac6c1",
+                    cursorwidth: "4px"
+                });
+                // 导进按钮显示
+                $('#testAddResultDo').show();
+            }
+        });
+    }
+
+    // 将测试结果导进“输出”、“成功示例”或“错误示例”中  传递数值（1-导入输出；2-导入成功；3-导入错误）
+    function send2Sample(num) {
+        var resultData = $("#returnAddData").val();
+        if(!resultData) {
+            swal({
+                title: "对不起，结果为空不能进行此次操作!",
+                confirmButtonText: "确定"
+            });
+            return;
+        } else {
+            if(num === 1) { // 导进输出
+                $('#outputSample').val(resultData);
+            } else if(num === 2) { // 导进成功
+                $('#trueSample').val(resultData);
+            } else { // 导进错误
+                $('#falseSample').val(resultData);
+            }
+        }
+    }
+</script>

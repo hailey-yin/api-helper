@@ -1,0 +1,70 @@
+.ztree * {
+	font-size: 11px;
+	color: #5b5b5b;
+}
+.ztree li ul{ 
+	margin:0;
+	//padding:0
+}
+.ztree li {
+	line-height:30px;
+}
+.ztree li a {
+	height:30px;
+	transition:0s all;
+}
+.ztree li a:hover {
+	text-decoration:none; 
+	background-color: #eee;
+	color: #fff;
+}
+.ztree li a span.button.switch {
+	visibility:visible
+}
+.ztree.showIcon li a span.button.switch {
+	visibility:visible
+}
+.ztree li a.curSelectedNode {
+	background-color:#eee;
+	border:0;height:30px;
+}
+.ztree li span {
+	line-height:30px;
+}
+.ztree li span.button {
+}
+.ztree li span.button.switch {
+	width: 16px;height: 16px;
+}
+.ztree li a.level0 span {
+	font-size: 15px;
+	color: #5B5B5B;
+}
+.ztree li span.button {
+	background-image:url("../images/left_menuForOutLook.png"); 
+	*background-image:url("../images/left_menuForOutLook.gif")
+}
+.ztree li span.button.switch.level0 {
+	width: 20px; height:20px
+}
+.ztree li span.button.switch.level1 {
+	width: 20px; height:20px
+}
+.ztree li span.button.noline_open {
+	background-position: 0 0;
+}
+.ztree li span.button.noline_close {
+	background-position: -18px 0;
+}
+.ico_docu {
+	width: 30px;
+	margin-top: 8px;
+}
+ul.ztree {
+	margin: 0px 14px 0px -5px;
+	border: 1px solid #fff;
+}
+.ztree li span.button.ico_docu {
+	width: 32px;
+	margin-top: 8px;
+}

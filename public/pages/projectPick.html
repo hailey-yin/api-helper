@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styleRestAPI.css">
+</head>
+<body>
+<div class="outPut">
+    <div class="container">
+        <div style="text-align:center;margin-bottom:40px;">
+            <h2 style="color:#5cb85c">
+                <span class="glyphicon glyphicon-search"></span>&nbsp;
+                <span>选择你的项目</span>
+            </h2>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="projectHead">
+                    <div class="projectAdd">
+                        <span>项目</span>
+                    </div>
+                    <input class="projectInput" placeholder="请输入项目名">
+                    <a href="javascript:void(0)" onclick="installProject()" class="projectInputSearch">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </a>
+                </div>
+                <div class="projectContent" id="projectContent">
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="projectManage" class="projectManaBottom">
+                    <div style="text-align:center;margin-bottom:40px;">
+                        <h2 style="color:#5cb85c">
+                            <span class="glyphicon glyphicon-file"></span>&nbsp;<span>项目信息</span>
+                        </h2>
+                    </div>
+                    <form id="projectShowDetail">
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>项目名称</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <input class="serverAddressInput" style="width:100%" placeholder="项目名称" id="projectName"
+                                       readonly="true" tabindex="1">
+                            </div>
+                        </div>
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>项目简介</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <input class="serverAddressInput" style="width:100%" placeholder="项目简介"
+                                       id="projectBrief" readonly="true" tabindex="2">
+                            </div>
+                        </div>
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>项目描述</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <textarea class="serverAddressText" style="width:100%" placeholder="项目描述"
+                                          id="projectDesc" readonly="true" tabindex="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="row" style="padding:10px 200px">
+                            <div class="col-md-3" style="text-align:center;padding:8px">
+                                <span>服务器地址</span><span style="font-weight:600">:</span>
+                            </div>
+                            <div class="col-md-9">
+                                <input class="serverAddressInput" style="width:100%" placeholder="服务器地址"
+                                       id="servesAddress" readonly="true" tabindex="4">
+                            </div>
+                        </div>
+                        <div><input id="projectId" style="display: none"></div>
+                    </form>
+                    <div style="margin:0 auto;clear:both;text-align:center;padding:50px 0px 20px;">
+                        <a href="javascript:void(0)" style="display:none" class="nextStepA" onclick="viewAPI()"
+                           id="edit-api"><span class="glyphicon glyphicon-pencil"></span>&nbsp;编辑API</a>
+                        <a href="javascript:void(0)" style="display:none" class="nextStepA" onclick="loadPage(777)"
+                           id="release-api"><span class="glyphicon glyphicon-hand-right"></span>&nbsp;发布API</a>
+                        <a href="javascript:void(0)" style="display:none" class="nextStepA" onclick="loadPage(999)"
+                           id="history"><span class="glyphicon glyphicon-folder-open"></span>&nbsp;发布历史</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        //初始化项目展示DIV高度
+        $(".projectContent").css({"height": $(window).height() - 280 + "px"});
+        $("#projectShowDetail")[0].reset();
+        installProject();
+        $("#projectDesc").niceScroll({
+            cursorcolor: "#5cb85c",
+            cursorborder: "#5cb85c",
+            cursorwidth: "4px"
+        });
+        $("#projectContent").niceScroll({
+            cursorcolor: "#cac6c1",
+            cursorborder: "#cac6c1",
+            cursorwidth: "4px"
+        });
+    });
+
+    //初始化项目信息
+    function installProject() {
+        $("#projectContent").empty();
+        var Name = $(".projectInput").val().trim();
+        $.ajax({
+            type: "get",
+            url: "api/projects",
+            data: {
+                name: Name
+            },
+            success: function (data) {
+                showProject(data.result);
+            }
+        });
+    }
+
+    //初始化项目名称展示
+    function showProject(content) {
+        var total = [];
+        for (var i = 0; i < content.length; i++) {
+            var pro = new Array();
+            pro.push('<div class="eachProName"><a href="javascript:void(0)" onclick="continueInput(\'' + content[i].id + '\',\'' + content[i].name + '\',\'' + content[i].info + '\',\'' + content[i].desc + '\',\'' + content[i].urlprefix + '\')">' + content[i].name + '</a></div>');
+            total.push(pro.join(''));
+        }
+        $("#projectContent").append(total);
+    }
+
+    //选择项目名称后下滑至项目详情
+    function continueInput(a, b, c, d, e) {
+        $("html,body").stop(true);
+        $("html,body").animate({scrollTop: $("#projectManage").offset().top}, 500);
+
+        // 清空之前信息栏详情数据
+        $("#projectName").val("");
+        $("#projectBrief").val("");
+        $("#projectDesc").val("");
+        $("#servesAddress").val("");
+
+        // 填充数据
+        $("#projectId").val(a);
+        $("#projectName").val(b);
+        $("#projectBrief").val(c);
+        $("#projectDesc").val(d);
+        $("#servesAddress").val(e);
+        projectRead();
+        $("#edit-api,#release-api,#history").show();
+    }
+
+</script>
+</body>
+</html>
